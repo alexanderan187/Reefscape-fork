@@ -53,8 +53,7 @@ public class Vision {
         m_simVisualName = simVisualName;
         m_visionSim = visionSim;
 
-        photonEstimator =
-                new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, roboToCam);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, roboToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         log_camPose = NetworkTableInstance.getDefault()
@@ -100,16 +99,6 @@ public class Vision {
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         List<PhotonPipelineResult> unreadCameraResults = m_camera.getAllUnreadResults();
-
-        // update m_latestPhotonPipelineResult
-        // if (unreadCameraResults.size() > 0) {
-        //     m_latestPhotonPipelineResultOptional = Optional.of(unreadCameraResults.get(unreadCameraResults.size()-1));
-        // } else {
-        //     // i could make a threshold of time difference between result time and current time
-        //     // to make it stale after a time, but that adds potential for silliness and i would
-        //     // rather just not use something older when something new should come in regularly
-        //     m_latestPhotonPipelineResultOptional = Optional.empty();
-        // }
 
         for (var change : unreadCameraResults) {
             visionEst = photonEstimator.update(change);
