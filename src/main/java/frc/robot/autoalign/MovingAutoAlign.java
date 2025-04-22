@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.MovingAutoAlignK;
+import frc.robot.Robot;
 import frc.robot.subsystems.Swerve;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.DoubleLogger;
@@ -104,23 +105,19 @@ public class MovingAutoAlign {
         // This feels like a horrible way of getting around lambda final requirements
         // Is there a cleaner way of doing this?
         final Pose2d cachedTarget[] = {Pose2d.kZero};
-        // interestingly no kD in the heading controller
         final ProfiledPIDController headingController =
             // assume we can accelerate to max in 2/3 of a second
             new ProfiledPIDController(
                 MovingAutoAlignK.kThetaKP, 0.0, 0.0, 
                 MovingAutoAlignK.kThetaConstraints);
         headingController.enableContinuousInput(-Math.PI, Math.PI);
-        // ok, use passed constraints on X controller
         final ProfiledPIDController vxController =
             new ProfiledPIDController(MovingAutoAlignK.kXKP, 0.01, 0.01, xyConstraints.get());
-        // use constraints from constants for y controller?
-        // why define them with different constraints?? it's literally field relative
-        // the difference in x and y dimensions almost definitely do not mean anything to robot movement
         final ProfiledPIDController vyController =
             new ProfiledPIDController(MovingAutoAlignK.kYKP, 0.01, 0.01, xyConstraints.get());
 
         // this is created at trigger binding, not created every time the command is scheduled
+        // i think java got angry when i put it as static in the class but i don't rember
         final SwerveRequest.ApplyFieldSpeeds swreq_driveFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds()
             .withDriveRequestType(DriveRequestType.Velocity);
 
@@ -150,8 +147,8 @@ public class MovingAutoAlign {
                     curPose.getY(), fieldRelativeChassisSpeeds.vyMetersPerSecond);
             })
         .andThen(
-            // so does this keep running over and over again?
-            // i assume it has to make sure that the speeds actually update as
+            // you have to assume that applyRequest calls this supplier over and over
+            // until the drivetrain is commanded to do something else
             swerve.applyRequest(
                 () -> {
                 // get difference between target pose and current pose

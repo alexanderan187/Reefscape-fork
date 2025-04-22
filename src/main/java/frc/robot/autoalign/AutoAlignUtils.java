@@ -30,19 +30,19 @@ import frc.robot.subsystems.Swerve;
 import frc.util.AllianceFlipUtil;
 
 /**
- * Both AutoAlign classes extend this because it has helper methods they both need to use
+ * This is seperate from both auto align classes because they both need to use this
  */
 public class AutoAlignUtils {
     private static final String kTopicPrefix = "Robot/AutoAlignUtils/";
     private static final StructPublisher<Pose2d> log_predictedFuturePose = NetworkTableInstance.getDefault()
         .getStructTopic(kTopicPrefix + "predictedFuturePose", Pose2d.struct).publish();
 
-        /**
-         * <p> Intakes current state of the robot to try and predict where it will be in the future and 
-         *  guess where the driver will want to score
-         * @param curState Current state of the swerve drive state when it is commanded to auto align
-         * @return Returns an int corresponding to the tag id for most likely reef face
-         */
+    /**
+     * <p> Intakes current state of the robot to try and predict where it will be in the future and 
+     *  guess where the driver will want to score
+     * @param curState Current state of the swerve drive state when it is commanded to auto align
+     * @return Returns an int corresponding to the tag id for most likely reef face
+     */
     public static int getMostLikelyReefTagId(SwerveDriveState curState) {
         // cache current alliance
         Optional<Alliance> curAlliance = DriverStation.getAlliance();
@@ -219,6 +219,23 @@ public class AutoAlignUtils {
             SharedAutoAlignK.kFinishedVelTolerance);
     }
 
+    /**
+     * <p> Returns true if the poses are close enough together (within given tolerances)
+     *  and the velocity is within the tolerance given relative to zero
+     * @param pose Pose 1 to compare
+     * @param pose2 Pose 2 to compare
+     * @param speeds Speeds of robot
+     * @param linearTolerance Max linear distance pose 1 and pose 2 can be apart while 
+     *  while qualifying as in tolerances
+     * @param rotationalTolerance Max rotational difference pose 1 and pose 2 can be 
+     *  apart while qualifying as in tolerances
+     * @param velocityTolerance Maximum speed above 0 that the passed speeds object
+     *  can be going while qualifying as in tolerances
+     * @return Returns true when the poses are close enough to one another and the given
+     *  speeds close enough to zero to qualify for given tolerances
+     */
+    // in an ideal world i would have remembered to chain everything to this implementation
+    // but i added isInTolerance in a rush so it kind of became a mess
     public static boolean isInTolerance(Pose2d pose, 
             Pose2d pose2, 
             ChassisSpeeds speeds, 
@@ -243,17 +260,4 @@ public class AutoAlignUtils {
             && MathUtil.isNear(
                 0.0, diff.getRotation().getRadians(), rotationalTolerance);
     }
-
-    // public static BooleanSupplier isInToleranceSupplier(
-    //         Supplier<Pose2d> pose,
-    //         Supplier<Pose2d> pose2,
-    //         Supplier<ChassisSpeeds> speeds,
-    //         DoubleSupplier linearTolerance,
-    //         DoubleSupplier rotationTolerance,
-    //         DoubleSupplier velocityTolerance) {
-    //     return () -> {
-    //         isInTolerance(pose.get(), pose2.get(), speeds.get(), linearTolerance.getAsDouble(), rotationTolerance.getAsDouble()
-    //             velocityTolerance.getAsDouble());
-    //     };
-    // }
 }

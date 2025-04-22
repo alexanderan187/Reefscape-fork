@@ -70,7 +70,18 @@ public class LegacyAutoAlign {
             .until(() -> AutoAlignUtils.isInTolerance(drivetrain.getState().Pose, destinationPose.get()));
     }
 
-    // MAX ROTATION TOLERANCE IN RADIANS
+    /**
+     * <p> Uses {@link #moveToPose(Swerve, Supplier)} and interrupts it oncne the robot
+     *  is in tolerances scaled by time
+     * @param drivetrain Drivetrain
+     * @param destinationPose Destination pose for the robot
+     * @param maxToleranceTime Time in which maximum tolerances should apply
+     * @param maxLinearTolerance Maximum linaer tolerance
+     * @param maxRotationTolerance Maximum rotational tolerance
+     * @param onBeginFunc Function to run on auto align start
+     * @return Returns a Command which Commands the drivetrain to move to the a supplied Pose
+     *  until it is in the supplied tolerances
+     */
     public static Command moveToPoseUntilInTimeScaledTolerance(
             Swerve drivetrain, 
             Supplier<Pose2d> destinationPose, 

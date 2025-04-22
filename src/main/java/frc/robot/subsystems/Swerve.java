@@ -443,6 +443,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         log_chassisSpeedVYError.accept(targetSpeeds.vyMetersPerSecond - speed.vyMetersPerSecond);
     }
 
+    /**
+     * Does fancy internet math to convert a heading and speeds into field relative speeds
+     * @param swerveDriveState Current state of the robot
+     * @return ChassisSpeeds where vx and vy are field relative instead of chassis relative
+     */
     public static ChassisSpeeds getFieldRelativeChassisSpeeds(SwerveDriveState swerveDriveState) {
         Pose2d pose = swerveDriveState.Pose;
         ChassisSpeeds robotRelChassisSpeeds = swerveDriveState.Speeds;
