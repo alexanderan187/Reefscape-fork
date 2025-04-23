@@ -444,26 +444,46 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     /**
-     * Does fancy internet math to convert a heading and speeds into field relative speeds
-     * @param swerveDriveState Current state of the robot
+     * <p> Does fancy internet math to convert the robot's current state into field relative speeds
      * @return ChassisSpeeds where vx and vy are field relative instead of chassis relative
      */
-    public static ChassisSpeeds getFieldRelativeChassisSpeeds(SwerveDriveState swerveDriveState) {
-        Pose2d pose = swerveDriveState.Pose;
-        ChassisSpeeds robotRelChassisSpeeds = swerveDriveState.Speeds;
-
-        return new ChassisSpeeds(
-                robotRelChassisSpeeds.vxMetersPerSecond * pose.getRotation().getCos()
-                        - robotRelChassisSpeeds.vyMetersPerSecond * pose.getRotation().getSin(),
-                robotRelChassisSpeeds.vyMetersPerSecond * pose.getRotation().getCos()
-                        + robotRelChassisSpeeds.vxMetersPerSecond * pose.getRotation().getSin(),
-                robotRelChassisSpeeds.omegaRadiansPerSecond);
-    }
-
     public ChassisSpeeds getFieldRelativeChassisSpeeds() {
         return getFieldRelativeChassisSpeeds(getState());
     }
 
+    /**
+     * Does fancy internet math to convert a heading and speeds into field relative speeds
+     * @param swerveDriveState Current state of the robot
+     * @return ChassisSpeeds representing field relative velocity of the robot
+     */
+    public static ChassisSpeeds getFieldRelativeChassisSpeeds(SwerveDriveState swerveDriveState) {
+        return getFieldRelativeSpeeds(swerveDriveState.Speeds, swerveDriveState.Pose);
+    }
+
+    /**
+     * Does fancy internet math to convert a heading and speeds into field relative speeds
+     * @param robotRelChassisSpeeds ChassisSpeeds representing robot relative velocities
+     * @param location Current location of the robot
+     * @return ChassisSpeeds representing field relative velocity of the robot
+     */
+    public static ChassisSpeeds getFieldRelativeSpeeds(ChassisSpeeds robotRelChassisSpeeds, Pose2d location) {
+        return getFieldRelativeChassisSpeeds(robotRelChassisSpeeds, location.getRotation());
+    }
+
+    /**
+     * <p> Does fancy internet math to convert a heading and speeds into field relative speeds
+     * @param robotRelChassisSpeeds ChassisSpeeds representing robot relative velocities
+     * @param heading Direction the robot is pointing
+     * @return ChassisSpeeds representing field relative velocity of the robot
+     */
+    public static ChassisSpeeds getFieldRelativeChassisSpeeds(ChassisSpeeds robotRelChassisSpeeds, Rotation2d heading) {
+        return new ChassisSpeeds(
+                robotRelChassisSpeeds.vxMetersPerSecond * heading.getCos()
+                        - robotRelChassisSpeeds.vyMetersPerSecond * heading.getSin(),
+                robotRelChassisSpeeds.vyMetersPerSecond * heading.getCos()
+                        + robotRelChassisSpeeds.vxMetersPerSecond * heading.getSin(),
+                robotRelChassisSpeeds.omegaRadiansPerSecond);
+    }
 
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
