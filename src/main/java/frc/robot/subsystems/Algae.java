@@ -9,8 +9,8 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -80,10 +80,10 @@ public class Algae extends SubsystemBase {
         m_wrist.getConfigurator().apply(kWristConfiguration);
         m_intake.getConfigurator().apply(kIntakeConfiguration);
 
-        nte_wristIsCoast = Shuffleboard.getTab(kLogTab)
-                  .add("wrist coast", false)
-                  .withWidget(BuiltInWidgets.kToggleSwitch)
-                  .getEntry();
+        // nte_wristIsCoast = Shuffleboard.getTab(kLogTab)
+        //           .add("wrist coast", false)
+        //           .withWidget(BuiltInWidgets.kToggleSwitch)
+        //           .getEntry();
 
         m_state = State.IDLE;
 
