@@ -36,12 +36,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.MovingAutoAlignK;
-import frc.robot.Constants.SharedAutoAlignK;
+import frc.robot.Constants.AutoAlignmentK;
 import frc.robot.Constants.VisionK;
-import frc.robot.autoalign.AutoAlignUtils;
-import frc.robot.autoalign.MovingAutoAlign;
-import frc.robot.autons.AutonChooser;
 import frc.robot.autons.WaltAutonBuilder;
 import frc.robot.autons.TrajsAndLocs.HPStation;
 import frc.robot.autons.TrajsAndLocs.ReefLocs;
@@ -96,7 +92,7 @@ public class Robot extends TimedRobot {
     VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
 
   // this should be updated with all of our cameras
-  private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam removed readded and ready to rumble
+  private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam was removed (now back and better than ever)
 
   private final DoubleLogger log_stickDesiredFieldX = WaltLogger.logDouble("Swerve", "stick desired teleop x");
   private final DoubleLogger log_stickDesiredFieldY = WaltLogger.logDouble("Swerve", "stick desired teleop y");
@@ -219,6 +215,10 @@ public class Robot extends TimedRobot {
       this::manipRumble
     );
 
+    // TODO: change back to:
+    // waltAutonFactory = Optional.of(new WaltAutonFactory(elevator, drivetrain.autoFactory, superstructure, drivetrain));
+    // once autochooser is unbrokenified
+    
     drivetrain.registerTelemetry(logger::telemeterize);
 
 
@@ -227,27 +227,18 @@ public class Robot extends TimedRobot {
     // configureTestBindings();
   }
 
-  private final Runnable cameraSnapshotFunc = () -> {
-    for (Vision camera : cameras) {
-      camera.takeBothSnapshots();
-    }
-  };
-
   private WaltAutonFactory autonFactoryFactory(
     StartingLocs startLoc, List<ReefLocs> scoreLocs,
     List<EleHeight> heights, List<HPStation> hpStations) {
       return new WaltAutonFactory(
-        elevator, drivetrain.autoFactory, superstructure, drivetrain, funnel, cameraSnapshotFunc,
+        elevator, drivetrain.autoFactory, superstructure, drivetrain, funnel, 
         startLoc, new ArrayList<>(scoreLocs), new ArrayList<>(heights), new ArrayList<>(hpStations)
       );
   }
 
   Command autoAlignCmd(boolean rightReef) {
-    return MovingAutoAlign.autoAlignWithIntermediateTransformUntilInTolerances(
-      drivetrain, 
-      () -> AutoAlignUtils.getMostLikelyScorePose(drivetrain.getState(), rightReef), 
-      () -> SharedAutoAlignK.kIntermediatePoseTransform
-    ).alongWith(Commands.runOnce(cameraSnapshotFunc));
+    return drivetrain.autoAlignWithIntermediatePose(() -> Vision.getMostRealisticScorePose(drivetrain.getState(), rightReef),
+      new Transform2d(AutoAlignmentK.kIntermediatePoseDistance, 0, Rotation2d.kZero));
   }
 
   // checks for finger in unsafe place
@@ -427,7 +418,7 @@ public class Robot extends TimedRobot {
   public void robotInit(){
     WaltAutonBuilder.configureFirstCycle();
     
-    // addPeriodic(() -> superstructure.periodic(), 0.01);
+    addPeriodic(() -> superstructure.periodic(), 0.01);
 
     SmartDashboard.putData("ReefPoses", FieldConstants.kReefPosesField2d);
   }
@@ -435,8 +426,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    superstructure.periodic();
     
     // loops through each camera and adds its pose estimation to the drivetrain pose estimator if required
     for (Vision camera : cameras) {
@@ -471,12 +460,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (Superstructure.nte_autonOnCart.getBoolean(false)) {
-      Constants.kTestingAutonOnCart = true;
-    } else {
-      Constants.kTestingAutonOnCart = false;
-    }
-
     if (autonNotMade) {
       // check if the AUTON READY button has been pressed
       readyToMakeAuton = WaltAutonBuilder.nte_autonEntry.getBoolean(false);
@@ -609,9 +592,9 @@ public class Robot extends TimedRobot {
     if (waltAutonFactory.isPresent()) {
       Commands.runOnce(() -> waltAutonFactory.get().autonTimer.stop());
     }
-    superstructure.forceToIntake().schedule();
+    superstructure.forceIdle().schedule();
     algae.toIdleCmd().schedule();
-    finger.inCmd().schedule();
+    finger.toIdleCmd().schedule();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

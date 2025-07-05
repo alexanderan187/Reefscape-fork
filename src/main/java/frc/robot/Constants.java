@@ -17,7 +17,6 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -44,14 +43,12 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
 import org.photonvision.simulation.SimCameraProperties;
+
 
 public class Constants {
      /* general */
      public static final  boolean kDebugLoggingEnabled = true;
-
-     public static boolean kTestingAutonOnCart = false;
  
      public static final double kRumbleIntensity = 1.0;
      public static final double kRumbleTimeoutSecs = 0.5;
@@ -150,7 +147,7 @@ public class Constants {
          public static final double kCoralSpeed = 1;
 
          public static final double kFastIntakeVolts = 12;
-         public static final double kSlowIntakeVolts = 3.7;
+         public static final double kSlowIntakeVolts = 3;
          public static final double kScoreVolts = 4.5;
          public static final double kFingerVolts = 4.7;
  
@@ -198,7 +195,6 @@ public class Constants {
          public static final double kMinAngleRotations = -1;
          public static final double kParallelToGroundRotations = -0.64;
          public static final double kClimbRotations = -0.9;
-         public static final double kL1GuideRotations = -0.8;
          public static final double kDefaultPos = -0.1; 
  
          private static final MotorOutputConfigs kMotorOutputConfig = new MotorOutputConfigs()
@@ -449,73 +445,16 @@ public class Constants {
         }
     }
 
-    public static class SharedAutoAlignK {
-        public static final Distance kFieldTranslationTolerance = Meters.of(0.025); // meters
-        public static final Angle kFieldRotationTolerance = Degrees.of(0.5); // degrees
-
-        public static final double kIntermediatePoseDistance = -Units.inchesToMeters(6); // value in meters
-        public static final Transform2d kIntermediatePoseTransform 
-            = new Transform2d(kIntermediatePoseDistance, 0, Rotation2d.kZero);
-
-        public static final double kFinishedVelTolerance = 0.1; // m/s
-    }
-
-    public static class LegacyAutoAlignK {
-        public static final String kLogTab = "LegacyAutoAlign";
-
-        public static double kXKP = 5.5;
-        public static double kYKP = 5.5;
-        public static double kThetaKP = 10;
-        
-        public static final PIDController kAutoAlignXController = new PIDController(kXKP, 0, 0);
-        public static final PIDController kAutoAlignYController = new PIDController(kYKP, 0, 0);
-        public static final PIDController kAutoAlignThetaController = new PIDController(kThetaKP, 0, 0);
-        // we need to do this so the PIDController works properly
-        static {
-            kAutoAlignThetaController.enableContinuousInput(-Math.PI, Math.PI);
-        }
-
-        // TODO: these will really need tuning
-        // teleop speeds below
-        public static final double kMaxDimensionVel = 1.65; // m/s
-        public static final double kMaxDimensionAccel = 6; // m/s^2
-        public static final TrapezoidProfile.Constraints kXYConstraints = new TrapezoidProfile.Constraints(kMaxDimensionVel, kMaxDimensionAccel);
-        // Auton speeds below
-        public static final double kMaxDimensionVelEleUp = 2; // m/s
-        public static final double kMaxDimensionAccelEleUp = 2.6; // m/s^2
-        public static final TrapezoidProfile.Constraints kXYConstraintsAuton 
-            = new TrapezoidProfile.Constraints(kMaxDimensionVelEleUp,kMaxDimensionAccelEleUp);
-
-
-        public static final double kFinishedVelTolerance = 0.1; // m/s
-
-        public static final double kMaxThetaVel = 4; // rad/s
-        public static final double kMaxThetaAccel = 8; // rad/s^2
-        public static final TrapezoidProfile.Constraints kThetaConstraints = new TrapezoidProfile.Constraints(kMaxThetaVel, kMaxThetaAccel);
-        
-        /** <p>Arbitrary number to control how much a difference in rotation should affect tag selection. Higher means more weight
-         * <p> 0 means rotation difference has no weight, negative will literally bias it against tags that have more similar rotations */
-        public static final double kRotationWeight = 0.2;
-        
-        /**<p>[0, 1]. Controls weight of predicted future pose in velocity weighted tag selection.
-         * <p> 0 is no weight, 1 is 100% weight (no input from current state).
-         * <p> Impacts {@link #kCurrentWeight} */
-        public static final double kFutureWeight = 0.2;
-        /**<p>Equal to 1 - {@link #kFutureWeight}. Controls weight of the current pose in velocity weighted tag selection */
-        public static final double kCurrentWeight = 1 - kFutureWeight;
-        public static final double kFutureDelta = 0.3; // s
-
-        public static final double kMaxXYSpeedAutoalign = 1.5;
-    }
-
-    public static class MovingAutoAlignK {
-        public static final String kLogTab = "MovingAutoAlign";
-
+    public static class AutoAlignmentK {
         public static double kXKP = 8;
         public static double kYKP = 8;
         public static double kThetaKP = 10;
 
         // SUPER COOL AUTO ALIGN :sunglasses: - this should eventually allow you to replace all code using above constants
+        public static final Distance kFieldTranslationTolerance = Meters.of(0.025); // meters
+        public static final Angle kFieldRotationTolerance = Degrees.of(0.5); // degrees
+
+        public static final double kIntermediatePoseDistance = -Units.inchesToMeters(6);
 
         // TODO: these will really need tuning
         // teleop speeds below
@@ -528,6 +467,9 @@ public class Constants {
         public static final TrapezoidProfile.Constraints kXYConstraintsAuton 
             = new TrapezoidProfile.Constraints(kMaxDimensionVelEleUp,kMaxDimensionAccelEleUp);
 
+
+        public static final double kFinishedVelTolerance = 0.1; // m/s
+
         public static final double kMaxThetaVel = 4; // rad/s
         public static final double kMaxThetaAccel = 8; // rad/s^2
         public static final TrapezoidProfile.Constraints kThetaConstraints = new TrapezoidProfile.Constraints(kMaxThetaVel, kMaxThetaAccel);
@@ -537,6 +479,8 @@ public class Constants {
         public static final double kRotationWeight = 0.2;
 
         public static final double kFutureDelta = 0.3; // seconds, TODO: needs tuning
+
+        // ths 
 
     }
 }
