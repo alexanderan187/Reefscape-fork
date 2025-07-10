@@ -327,7 +327,7 @@ public class Superstructure {
             .onTrue(
                 Commands.sequence(
                     changeStateCmd(State.SCORING),
-                    Commands.waitSeconds(.5),
+                    Commands.wait(.5),
                     changeStateCmd(State.SCORED),
                     Commands.runOnce(() -> m_simScored = false)
                 ));
@@ -366,11 +366,11 @@ public class Superstructure {
                             Commands.parallel(
                                 m_coral.slowIntake()
                             ),
-                            Commands.waitSeconds(1),
+                            Commands.wait(1.0),
                             Commands.parallel(
                                 m_coral.slowIntakeReversal()
                             ),
-                            Commands.waitSeconds(0.05)
+                            Commands.wait(0.05)
                         )
                     )
                 ).alongWith(takeCam1Snapshots())
