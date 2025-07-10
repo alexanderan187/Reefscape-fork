@@ -80,7 +80,7 @@ public class SimpleAutons {
             .onTrue(
                 Commands.sequence(
                     m_superstructure.autonEleToHPReq(),
-                    Commands.waitSeconds(2),
+                    Commands.wait(2.0),
                     drive2.cmd()
                 )
             );
