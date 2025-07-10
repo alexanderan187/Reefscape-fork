@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
+// import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -53,8 +53,8 @@ import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
-import frc.robot.vision.Vision;
-import frc.robot.vision.VisionSim;
+// import frc.robot.vision.Vision;
+// import frc.robot.vision.VisionSim;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Algae.State;
 
@@ -85,14 +85,14 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   // VisionSim could probably be static or a singleton instead of this reference mess but that's extra work to potentially break something
-  private final VisionSim visionSim = new VisionSim();
-  private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
-    VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
-  private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
-    VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
+  // private final VisionSim visionSim = new VisionSim();
+  // private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
+  //   VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
+  // private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
+  //   VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
 
   // this should be updated with all of our cameras
-  private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam was removed (now back and better than ever)
+  // private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam was removed (now back and better than ever)
 
   private final DoubleLogger log_stickDesiredFieldX = WaltLogger.logDouble("Swerve", "stick desired teleop x");
   private final DoubleLogger log_stickDesiredFieldY = WaltLogger.logDouble("Swerve", "stick desired teleop y");
@@ -152,9 +152,9 @@ public class Robot extends TimedRobot {
 
   private Optional<WaltAutonFactory> waltAutonFactory;
 
-  public void updateStaticField() {
-    Robot.robotField = visionSim.getSimDebugField();
-  }
+  // public void updateStaticField() {
+  //   Robot.robotField = visionSim.getSimDebugField();
+  // }
 
   public Robot() {
     SignalLogger.start();
@@ -165,7 +165,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      Optional.of(eleForwardsCam),
+      // Optional.of(eleForwardsCam),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -188,7 +188,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      Optional.empty(),
+      // Optional.empty(),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -222,7 +222,7 @@ public class Robot extends TimedRobot {
     drivetrain.registerTelemetry(logger::telemeterize);
 
 
-    updateStaticField();
+    // updateStaticField();
     configureBindings();
     // configureTestBindings();
   }
@@ -236,10 +236,10 @@ public class Robot extends TimedRobot {
       );
   }
 
-  Command autoAlignCmd(boolean rightReef) {
-    return drivetrain.autoAlignWithIntermediatePose(() -> Vision.getMostRealisticScorePose(drivetrain.getState(), rightReef),
-      new Transform2d(AutoAlignmentK.kIntermediatePoseDistance, 0, Rotation2d.kZero));
-  }
+  // Command autoAlignCmd(boolean rightReef) {
+  //   return drivetrain.autoAlignWithIntermediatePose(() -> Vision.getMostRealisticScorePose(drivetrain.getState(), rightReef),
+  //     new Transform2d(AutoAlignmentK.kIntermediatePoseDistance, 0, Rotation2d.kZero));
+  // }
 
   // checks for finger in unsafe place
   // no it doesnt lol. it prolly should tho.
@@ -302,12 +302,12 @@ public class Robot extends TimedRobot {
           )
         );
 
-      trg_leftTeleopAutoAlign.whileTrue(
-        autoAlignCmd(false)
-      );
-      trg_rightTeleopAutoAlign.whileTrue(
-        autoAlignCmd(true)
-      );
+      // trg_leftTeleopAutoAlign.whileTrue(
+      //   autoAlignCmd(false)
+      // );
+      // trg_rightTeleopAutoAlign.whileTrue(
+      //   autoAlignCmd(true)
+      // );
 
     // driver.start().whileTrue(drivetrain.wheelRadiusCharacterization(1));
   }
@@ -357,12 +357,12 @@ public class Robot extends TimedRobot {
       )
     );
 
-    trg_leftTeleopAutoAlign.whileTrue(
-      autoAlignCmd(false)
-    );
-    trg_rightTeleopAutoAlign.whileTrue(
-      autoAlignCmd(true)
-    );
+    // trg_leftTeleopAutoAlign.whileTrue(
+    //   autoAlignCmd(false)
+    // );
+    // trg_rightTeleopAutoAlign.whileTrue(
+    //   autoAlignCmd(true)
+    // );
     trg_driverDanger.and(driver.rightTrigger()).onTrue(superstructure.forceShoot());
     
     trg_manipDanger.and(trg_intakeReq).onTrue(superstructure.forceStateToIntake());
@@ -428,21 +428,21 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     
     // loops through each camera and adds its pose estimation to the drivetrain pose estimator if required
-    for (Vision camera : cameras) {
-      Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
-      if (estimatedPoseOptional.isPresent()) {
-        EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
-        Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
-        var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
-        drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
-        lastGotTagMsmtTimer.restart();
-      }
-    }
+      // for (Vision camera : cameras) {
+      //   Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
+      //   if (estimatedPoseOptional.isPresent()) {
+      //     EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
+      //     Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
+      //     var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
+      //     drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
+      //     lastGotTagMsmtTimer.restart();
+      //   }
+      // }
 
     boolean visionSeenPastSec = !lastGotTagMsmtTimer.hasElapsed(1);
     log_visionSeenPastSecond.accept(visionSeenPastSec);
-    double rio6VCurrent = RobotController.getCurrent6V();
-    log_rio6VRailCurrent.accept(rio6VCurrent);
+    // double rio6VCurrent = RobotController.getCurrent6V();
+    // log_rio6VRailCurrent.accept(rio6VCurrent);
   }
 
   @Override
@@ -621,7 +621,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     SwerveDriveState robotState = drivetrain.getState();
     Pose2d robotPose = robotState.Pose;
-    visionSim.simulationPeriodic(robotPose);
+    // visionSim.simulationPeriodic(robotPose);
     drivetrain.simulationPeriodic();
 
     // below is debug for swerve simulation. the farthest down one displays the module poses, but it's definitely bugged

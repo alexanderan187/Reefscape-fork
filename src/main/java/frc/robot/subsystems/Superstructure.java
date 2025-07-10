@@ -21,7 +21,7 @@ import static frc.robot.subsystems.Elevator.EleHeight.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
-import frc.robot.vision.Vision;
+// import frc.robot.vision.Vision;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
@@ -32,7 +32,7 @@ public class Superstructure {
     private final Coral m_coral;
     private final Finger m_finger;
     private final Elevator m_ele;
-    private final Optional<Vision> m_cam1;
+    // private final Optional<Vision> m_cam1;
     private final Funnel m_funnel;
 
     public final EventLoop stateEventLoop = new EventLoop();
@@ -151,7 +151,7 @@ public class Superstructure {
         Coral coral,
         Finger finger,
         Elevator ele,
-        Optional<Vision> cam1,
+        // Optional<Vision> cam1,
         Funnel funnel,
         Trigger eleToHPReq,
         Trigger intakeReq,
@@ -173,7 +173,7 @@ public class Superstructure {
         m_coral = coral;
         m_finger = finger;
         m_ele = ele;
-        m_cam1 = cam1;
+        // m_cam1 = cam1;
         m_funnel = funnel;
         
         /* state change trigs */
@@ -211,13 +211,13 @@ public class Superstructure {
         configureStateActions();
     }
 
-    private Command takeCam1Snapshots() {
-        return Commands.runOnce(() -> {
-            if (m_cam1.isPresent()) {
-                m_cam1.get().takeBothSnapshots();
-            }
-        });
-    }
+    // private Command takeCam1Snapshots() {
+    //     return Commands.runOnce(() -> {
+    //         if (m_cam1.isPresent()) {
+    //             m_cam1.get().takeBothSnapshots();
+    //         }
+    //     });
+    // }
     
     private void configureStateTransitions() {
         (stateTrg_idle.and(trg_teleopEleToHPReq).and(trg_inOverride.negate()).and(RobotModeTriggers.teleop()))
@@ -373,7 +373,7 @@ public class Superstructure {
                             Commands.wait(0.05)
                         )
                     )
-                ).alongWith(takeCam1Snapshots())
+                )//.alongWith(takeCam1Snapshots())
             );
         
         stateTrg_intook
@@ -417,7 +417,7 @@ public class Superstructure {
 
         stateTrg_scoreReady
             .onTrue(
-                Commands.print("RUMBLE coming to a controller near you soon...").alongWith(takeCam1Snapshots())
+                Commands.print("RUMBLE coming to a controller near you soon...")//.alongWith(takeCam1Snapshots())
                 // driverRumble(kRumbleIntensity, kRumbleTimeoutSecs)
             );
 
@@ -428,7 +428,7 @@ public class Superstructure {
                     Commands.waitUntil(m_coral.trg_botBeamBreak.negate()),
                     m_coral.stopCmd(),
                     Commands.print("in scoring the state")
-                ).alongWith(takeCam1Snapshots())
+                )//.alongWith(takeCam1Snapshots())
             );
 
         stateTrg_algaeRemovalL2

@@ -43,7 +43,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import org.photonvision.simulation.SimCameraProperties;
+//import org.photonvision.simulation.SimCameraProperties;
 
 
 public class Constants {
@@ -358,35 +358,35 @@ public class Constants {
      }
 
      public static class VisionK {
-        public static final SimCameraProperties kEleForwardCamSimProps = new SimCameraProperties();
-        static {
-            // See3CAM_24CUG
-            kEleForwardCamSimProps.setCalibration(1920, 1080, Rotation2d.fromDegrees(128.2));
-            kEleForwardCamSimProps.setCalibError(0.35, 0.10);
-            kEleForwardCamSimProps.setFPS(35);
-            kEleForwardCamSimProps.setAvgLatencyMs(30);
-            kEleForwardCamSimProps.setLatencyStdDevMs(15);
-        }
+        // public static final SimCameraProperties kEleForwardCamSimProps = new SimCameraProperties();
+        // static {
+        //     // See3CAM_24CUG
+        //     kEleForwardCamSimProps.setCalibration(1920, 1080, Rotation2d.fromDegrees(128.2));
+        //     kEleForwardCamSimProps.setCalibError(0.35, 0.10);
+        //     kEleForwardCamSimProps.setFPS(35);
+        //     kEleForwardCamSimProps.setAvgLatencyMs(30);
+        //     kEleForwardCamSimProps.setLatencyStdDevMs(15);
+        // }
 
-        public static final SimCameraProperties kEleRearCamSimProps = new SimCameraProperties();
-        static {
-            // See3CAM_24CUG
-            kEleRearCamSimProps.setCalibration(1920, 1080, Rotation2d.fromDegrees(128.2));
-            kEleRearCamSimProps.setCalibError(0.35, 0.10);
-            kEleRearCamSimProps.setFPS(35);
-            kEleRearCamSimProps.setAvgLatencyMs(30);
-            kEleRearCamSimProps.setLatencyStdDevMs(15);
-        }
+        // public static final SimCameraProperties kEleRearCamSimProps = new SimCameraProperties();
+        // static {
+        //     // See3CAM_24CUG
+        //     kEleRearCamSimProps.setCalibration(1920, 1080, Rotation2d.fromDegrees(128.2));
+        //     kEleRearCamSimProps.setCalibError(0.35, 0.10);
+        //     kEleRearCamSimProps.setFPS(35);
+        //     kEleRearCamSimProps.setAvgLatencyMs(30);
+        //     kEleRearCamSimProps.setLatencyStdDevMs(15);
+        // }
 
-        public static final SimCameraProperties kLowerRightCamSimProps = new SimCameraProperties();
-        static {
-            // Arducam OV9281
-            kLowerRightCamSimProps.setCalibration(1280, 720, Rotation2d.fromDegrees(100));
-            kLowerRightCamSimProps.setCalibError(0.35, 0.10);
-            kLowerRightCamSimProps.setFPS(45);
-            kLowerRightCamSimProps.setAvgLatencyMs(25);
-            kLowerRightCamSimProps.setLatencyStdDevMs(15);
-        }
+        // public static final SimCameraProperties kLowerRightCamSimProps = new SimCameraProperties();
+        // static {
+        //     // Arducam OV9281
+        //     kLowerRightCamSimProps.setCalibration(1280, 720, Rotation2d.fromDegrees(100));
+        //     kLowerRightCamSimProps.setCalibError(0.35, 0.10);
+        //     kLowerRightCamSimProps.setFPS(45);
+        //     kLowerRightCamSimProps.setAvgLatencyMs(25);
+        //     kLowerRightCamSimProps.setLatencyStdDevMs(15);
+        // }
         
 
         public static final String kElevatorForwardsCamName = "EleFrontCam";
