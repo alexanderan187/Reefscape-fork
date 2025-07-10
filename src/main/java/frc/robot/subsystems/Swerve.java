@@ -422,13 +422,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         var speed = getState().Speeds;
         var targetSpeeds = sample.getChassisSpeeds();
 
-        targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(
+        targetSpeeds.vx += m_pathXController.calculate(
             pose.getX(), sample.x
         );
-        targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(
+        targetSpeeds.vy += m_pathYController.calculate(
             pose.getY(), sample.y
         );
-        targetSpeeds.omegaRadiansPerSecond += m_pathThetaController.calculate(
+        targetSpeeds.omega += m_pathThetaController.calculate(
             pose.getRotation().getRadians(), sample.heading
         );
 
@@ -444,8 +444,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         log_errorX.accept(samplePose.getX() - pose.getX());
         log_errorY.accept(samplePose.getY() - pose.getY());
 
-        log_chassisSpeedVXError.accept(targetSpeeds.vxMetersPerSecond - speed.vxMetersPerSecond);
-        log_chassisSpeedVYError.accept(targetSpeeds.vyMetersPerSecond - speed.vyMetersPerSecond);
+        log_chassisSpeedVXError.accept(targetSpeeds.vx - speed.vx);
+        log_chassisSpeedVYError.accept(targetSpeeds.vy - speed.vy);
     }
 
     public Command directAutoAlignEleUp(
@@ -553,11 +553,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
                 headingController.reset(
                     curPose.getRotation().getRadians(),
-                    fieldRelativeChassisSpeeds.omegaRadiansPerSecond);
+                    fieldRelativeChassisSpeeds.omega);
                 vxController.reset(
-                    curPose.getX(), fieldRelativeChassisSpeeds.vxMetersPerSecond);
+                    curPose.getX(), fieldRelativeChassisSpeeds.vx);
                 vyController.reset(
-                    curPose.getY(), fieldRelativeChassisSpeeds.vyMetersPerSecond);
+                    curPose.getY(), fieldRelativeChassisSpeeds.vy);
             })
         .andThen(
             // so does this keep running over and over again?
@@ -619,7 +619,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     public static boolean isInTolerance(Pose2d pose, Pose2d pose2, ChassisSpeeds speeds) {
         return isInTolerance(pose, pose2)
-            && MathUtil.isNear(0.0, Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), AutoAlignmentK.kFinishedVelTolerance);
+            && MathUtil.isNear(0.0, Math.hypot(speeds.vx, speeds.vy), AutoAlignmentK.kFinishedVelTolerance);
     }
 
     public static ChassisSpeeds getFieldRelativeChassisSpeeds(SwerveDriveState swerveDriveState) {
@@ -627,11 +627,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         ChassisSpeeds robotRelChassisSpeeds = swerveDriveState.Speeds;
 
         return new ChassisSpeeds(
-                robotRelChassisSpeeds.vxMetersPerSecond * pose.getRotation().getCos()
-                        - robotRelChassisSpeeds.vyMetersPerSecond * pose.getRotation().getSin(),
-                robotRelChassisSpeeds.vyMetersPerSecond * pose.getRotation().getCos()
-                        + robotRelChassisSpeeds.vxMetersPerSecond * pose.getRotation().getSin(),
-                robotRelChassisSpeeds.omegaRadiansPerSecond);
+                robotRelChassisSpeeds.vx * pose.getRotation().getCos()
+                        - robotRelChassisSpeeds.vy * pose.getRotation().getSin(),
+                robotRelChassisSpeeds.vy * pose.getRotation().getCos()
+                        + robotRelChassisSpeeds.vx * pose.getRotation().getSin(),
+                robotRelChassisSpeeds.omega);
     }
 
     public ChassisSpeeds getFieldRelativeChassisSpeeds() {
@@ -695,7 +695,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             averageWheelPosition = 0;
 			for (int i = 0; i < getModules().length; i++) {
 				var pos = getModules()[i].getPosition(true);
-				startWheelPositions[i] = pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+				startWheelPositions[i] = pos.distance * TunerConstants.kDriveRotationsPerMeter;
 			}
 			m_omegaLimiter.reset(0);
 		});
@@ -710,7 +710,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 				double[] wheelPositions = new double[4];
 				for (int i = 0; i < getModules().length; i++) {
 					var pos = getModules()[i].getPosition(true);
-					wheelPositions[i] = pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+					wheelPositions[i] = pos.distance * TunerConstants.kDriveRotationsPerMeter;
 					averageWheelPosition += Math.abs(wheelPositions[i] - startWheelPositions[i]);
 				}
 				averageWheelPosition = averageWheelPosition / 4.0;
@@ -775,8 +775,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             var modTarg = swerveState.ModuleTargets[i];
 
             // position
-            var inches = Units.metersToInches(modPos.distanceMeters); 
-            var rots =  modPos.distanceMeters / Units.inchesToMeters(TunerConstants.kWheelDiameterInches * Math.PI);
+            var inches = Units.metersToInches(modPos.distance); 
+            var rots =  modPos.distance / Units.inchesToMeters(TunerConstants.kWheelDiameterInches * Math.PI);
             wheelRotations[i] = rots;
             wheelDistance[i] = inches;
         }
