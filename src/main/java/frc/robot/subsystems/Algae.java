@@ -7,7 +7,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.wpilibj.event.EventLoop;
 // import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 // import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -35,7 +35,7 @@ public class Algae extends SubsystemBase {
     private final TalonFX m_intake = new TalonFX(kIntakeCANID, TunerConstants.kCANBus);
 
     private boolean m_wristIsCoast = false; 
-    private GenericEntry nte_wristIsCoast;
+    private BooleanEntry nte_wristIsCoast = WaltLogger.booleanItem(kLogTab, "wristIsCoast");
 
     private final DoubleConsumer m_manipRumbler;
 
@@ -79,11 +79,6 @@ public class Algae extends SubsystemBase {
     ) {
         m_wrist.getConfigurator().apply(kWristConfiguration);
         m_intake.getConfigurator().apply(kIntakeConfiguration);
-
-        // nte_wristIsCoast = Shuffleboard.getTab(kLogTab)
-        //           .add("wrist coast", false)
-        //           .withWidget(BuiltInWidgets.kToggleSwitch)
-        //           .getEntry();
 
         m_state = State.IDLE;
 
@@ -262,7 +257,7 @@ public class Algae extends SubsystemBase {
     public void periodic() {
         stateEventLoop.poll();
     
-        setWristCoast(nte_wristIsCoast.getBoolean(false));
+        setWristCoast(nte_wristIsCoast.get(false));
 
         log_stateIdx.accept(m_state.idx);
         log_stateName.accept(m_state.name);

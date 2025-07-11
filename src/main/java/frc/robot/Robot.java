@@ -138,8 +138,6 @@ public class Robot extends TimedRobot {
 
   private final SwerveRequest straightWheelsReq = new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d());
 
-  private final DoubleLogger log_rio6VRailCurrent = WaltLogger.logDouble("Rio", "6VRailCurrent");
-
   private boolean autonNotMade = true;
   private boolean readyToMakeAuton = false;
   private boolean midAuton = false;
@@ -458,101 +456,101 @@ public class Robot extends TimedRobot {
     );
   }
 
-  @Override
-  public void disabledPeriodic() {
-    if (autonNotMade) {
-      // check if the AUTON READY button has been pressed
-      readyToMakeAuton = WaltAutonBuilder.nte_autonEntry.getBoolean(false);
+  // @Override
+  // public void disabledPeriodic() {
+  //   if (autonNotMade) {
+  //     // check if the AUTON READY button has been pressed
+  //     readyToMakeAuton = WaltAutonBuilder.nte_autonEntry.getBoolean(false);
 
-      // --- PRESET AUTONS
-      if (WaltAutonBuilder.nte_rightThreePiece.getBoolean(false)) {
-        waltAutonFactory = Optional.of(autonFactoryFactory(
-          StartingLocs.RIGHT, 
-          List.of(REEF_E, REEF_D, REEF_C, REEF_B), 
-          List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-          List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-        ));
+  //     // --- PRESET AUTONS
+  //     if (WaltAutonBuilder.nte_rightThreePiece.getBoolean(false)) {
+  //       waltAutonFactory = Optional.of(autonFactoryFactory(
+  //         StartingLocs.RIGHT, 
+  //         List.of(REEF_E, REEF_D, REEF_C, REEF_B), 
+  //         List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+  //         List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
+  //       ));
 
-        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
-        WaltAutonBuilder.nte_rightThreePiece.setBoolean(false);
-      } 
+  //       Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
+  //       WaltAutonBuilder.nte_rightThreePiece.setBoolean(false);
+  //     } 
 
-      if (WaltAutonBuilder.nte_leftThreePiece.getBoolean(false)) {
-        waltAutonFactory = Optional.of(autonFactoryFactory(
-          StartingLocs.LEFT, 
-          List.of(REEF_J, REEF_K, REEF_L, REEF_A),
-          List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-          List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
-        ));
+  //     if (WaltAutonBuilder.nte_leftThreePiece.getBoolean(false)) {
+  //       waltAutonFactory = Optional.of(autonFactoryFactory(
+  //         StartingLocs.LEFT, 
+  //         List.of(REEF_J, REEF_K, REEF_L, REEF_A),
+  //         List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+  //         List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
+  //       ));
 
-        // autonName = "Left 3 Piece: ";
-        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
-        WaltAutonBuilder.nte_leftThreePiece.setBoolean(false);
-      }
+  //       // autonName = "Left 3 Piece: ";
+  //       Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
+  //       WaltAutonBuilder.nte_leftThreePiece.setBoolean(false);
+  //     }
 
-      if(WaltAutonBuilder.nte_midOnePiece.getBoolean(false)) {
-        midAuton = true;
-        // tbh none of these values get used lol
-        waltAutonFactory = Optional.of(autonFactoryFactory(
-          StartingLocs.MID_G,
-          List.of(REEF_G),
-          List.of(EleHeight.L4),
-          List.of(HPStation.HP_RIGHT)
-        ));
+  //     if(WaltAutonBuilder.nte_midOnePiece.getBoolean(false)) {
+  //       midAuton = true;
+  //       // tbh none of these values get used lol
+  //       waltAutonFactory = Optional.of(autonFactoryFactory(
+  //         StartingLocs.MID_G,
+  //         List.of(REEF_G),
+  //         List.of(EleHeight.L4),
+  //         List.of(HPStation.HP_RIGHT)
+  //       ));
 
-        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
-        WaltAutonBuilder.nte_midOnePiece.setBoolean(false);
-      }
+  //       Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
+  //       WaltAutonBuilder.nte_midOnePiece.setBoolean(false);
+  //     }
 
     
-      // fail-case (no auton selected) - do nothing (its no longer that now)
-      if (readyToMakeAuton && waltAutonFactory.isEmpty()) {
-        waltAutonFactory = Optional.of(autonFactoryFactory(
-          StartingLocs.RIGHT,
-          List.of(REEF_E, REEF_D, REEF_C, REEF_B),
-          List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-          List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-        ));
+  //     // fail-case (no auton selected) - do nothing (its no longer that now)
+  //     if (readyToMakeAuton && waltAutonFactory.isEmpty()) {
+  //       waltAutonFactory = Optional.of(autonFactoryFactory(
+  //         StartingLocs.RIGHT,
+  //         List.of(REEF_E, REEF_D, REEF_C, REEF_B),
+  //         List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+  //         List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
+  //       ));
 
-        // autonName = "Right 3 Piece: E-L2, D-L4, C-L4";
-        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
-      }
+  //       // autonName = "Right 3 Piece: E-L2, D-L4, C-L4";
+  //       Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
+  //     }
 
-      // ---- SETS THE AUTON
-      if (readyToMakeAuton && waltAutonFactory.isPresent()) {
-        if (midAuton) {
-          m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().midAuton().cmd());
-        } else {
-          m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
-        }
+  //     // ---- SETS THE AUTON
+  //     if (readyToMakeAuton && waltAutonFactory.isPresent()) {
+  //       if (midAuton) {
+  //         m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().midAuton().cmd());
+  //       } else {
+  //         m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
+  //       }
 
-        autonNotMade = false;
-        autonName = waltAutonFactory.get().toString();
-        WaltAutonBuilder.nte_autonEntry.setBoolean(false);
-        WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
-        WaltAutonBuilder.nte_autonName.setString(autonName);
-        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CREATED", "Ready for Autonomous!"));
-      }
+  //       autonNotMade = false;
+  //       autonName = waltAutonFactory.get().toString();
+  //       WaltAutonBuilder.nte_autonEntry.setBoolean(false);
+  //       WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
+  //       WaltAutonBuilder.nte_autonName.setString(autonName);
+  //       Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CREATED", "Ready for Autonomous!"));
+  //     }
 
-    }
+  //   }
 
-    // if user hits clearAll button, the auton process resets
-    if (WaltAutonBuilder.nte_clearAll.getBoolean(false)) {
-      waltAutonFactory = Optional.empty();
-      m_autonomousCommand = Commands.print("========== No Auton Command Selected ==========");
+  //   // if user hits clearAll button, the auton process resets
+  //   if (WaltAutonBuilder.nte_clearAll.getBoolean(false)) {
+  //     waltAutonFactory = Optional.empty();
+  //     m_autonomousCommand = Commands.print("========== No Auton Command Selected ==========");
 
-      autonNotMade = true;
-      autonName = "No Auton Made";
-      WaltAutonBuilder.nte_autonEntry.setBoolean(false);
-      WaltAutonBuilder.nte_clearAll.setBoolean(false);
+  //     autonNotMade = true;
+  //     autonName = "No Auton Made";
+  //     WaltAutonBuilder.nte_autonEntry.setBoolean(false);
+  //     WaltAutonBuilder.nte_clearAll.setBoolean(false);
 
-      WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
-      WaltAutonBuilder.nte_autonName.setString(autonName);
+  //     WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
+  //     WaltAutonBuilder.nte_autonName.setString(autonName);
 
 
-      Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CLEARED", "Remake your auton!"));
-    }
-  }
+  //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CLEARED", "Remake your auton!"));
+  //   }
+  // }
 
   @Override
   public void disabledExit() {

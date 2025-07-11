@@ -327,7 +327,7 @@ public class Superstructure {
             .onTrue(
                 Commands.sequence(
                     changeStateCmd(State.SCORING),
-                    Commands.wait(.5),
+                    Commands.(.5),
                     changeStateCmd(State.SCORED),
                     Commands.runOnce(() -> m_simScored = false)
                 ));
