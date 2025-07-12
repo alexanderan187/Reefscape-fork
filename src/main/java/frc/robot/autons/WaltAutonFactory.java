@@ -50,7 +50,7 @@ public class WaltAutonFactory {
     private final Elevator m_ele;
     private final Swerve m_drivetrain;
     private final Funnel m_funnel;
-    private final Runnable m_onAutoAlignBeginFunc;
+    // private final Runnable m_onAutoAlignBeginFunc;
 
     private StartingLocs m_startLoc;
     // all need to have at least 1 thing in them
@@ -90,13 +90,13 @@ public class WaltAutonFactory {
 
     private Elastic.Notification leaveStartZoneOnlySadness =
         new Elastic.Notification(
-            Elastic.Notification.NotificationLevel.ERROR,
+            Elastic.NotificationLevel.ERROR,
             "Why We No Score :(",
             "Just FYI, we're only going to move forward"
         );
     private Elastic.Notification youMessedUpInAutonChooser =
         new Elastic.Notification(
-            Elastic.Notification.NotificationLevel.ERROR,
+            Elastic.NotificationLevel.ERROR,
             "Can't run full path",
             "ArrayList sizes didnt match up for reef, height, and HP. Will run as much of the path as possible"
         );
@@ -107,7 +107,7 @@ public class WaltAutonFactory {
         Superstructure superstructure,
         Swerve drivetrain,
         Funnel funnel,
-        Runnable onAutoAlignBeginFunc,
+        // Runnable onAutoAlignBeginFunc,
         StartingLocs startLoc,
         ArrayList<ReefLocs> scoreLocs,
         ArrayList<EleHeight> heights,
@@ -119,7 +119,7 @@ public class WaltAutonFactory {
         m_ele = ele;
         m_drivetrain = drivetrain;
         m_funnel = funnel;
-        m_onAutoAlignBeginFunc = onAutoAlignBeginFunc;
+        // m_onAutoAlignBeginFunc = onAutoAlignBeginFunc;
 
         m_startLoc = startLoc;
         m_scoreLocs = scoreLocs;
@@ -264,13 +264,13 @@ public class WaltAutonFactory {
             () -> destinationPose,
             () -> 1,
             () -> 10 * SharedAutoAlignK.kFieldTranslationTolerance.in(Meters),
-            () -> 10 * SharedAutoAlignK.kFieldRotationTolerance.in(Radians),
-            m_onAutoAlignBeginFunc
+            () -> 10 * SharedAutoAlignK.kFieldRotationTolerance.in(Radians)
+            //m_onAutoAlignBeginFunc
         );
 
         if (kTestingAutonOnCart) {
             aaCmd = Commands.sequence(
-                Commands.waitSeconds(0.5),
+                Commands.wait(0.5),
                 Commands.print("Fake Auto Align!!!"),
                 Commands.runOnce(() -> m_drivetrain.resetPose(destinationPose))
             );

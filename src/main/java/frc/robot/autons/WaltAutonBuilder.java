@@ -3,8 +3,8 @@ package frc.robot.autons;
 import java.util.ArrayList;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autons.TrajsAndLocs.HPStation;
@@ -13,19 +13,19 @@ import frc.robot.autons.TrajsAndLocs.StartingLocs;
 import frc.robot.subsystems.Elevator.EleHeight;
 
 public class WaltAutonBuilder {
-    public static GenericEntry nte_autonEntry;
-    public static GenericEntry nte_customAutonReady;
-    public static GenericEntry nte_autonRobotPush;  // button to select if we are pushing another robot b4 starting path
-    public static GenericEntry nte_clearAll;
+    // public static GenericEntry nte_autonEntry;
+    // public static GenericEntry nte_customAutonReady;
+    // public static GenericEntry nte_autonRobotPush;  // button to select if we are pushing another robot b4 starting path
+    // public static GenericEntry nte_clearAll;
 
-    public static GenericEntry nte_autonReadyToGo;  // to let the user know that an auton is loaded
-    public static GenericEntry nte_autonName;
+    // public static GenericEntry nte_autonReadyToGo;  // to let the user know that an auton is loaded
+    // public static GenericEntry nte_autonName;
 
-    // DEFINE PRESET BUTTONS
-    public static GenericEntry nte_taxiOnly;
-    public static GenericEntry nte_rightThreePiece;
-    public static GenericEntry nte_leftThreePiece;
-    public static GenericEntry nte_midOnePiece;
+    // // DEFINE PRESET BUTTONS
+    // public static GenericEntry nte_taxiOnly;
+    // public static GenericEntry nte_rightThreePiece;
+    // public static GenericEntry nte_leftThreePiece;
+    // public static GenericEntry nte_midOnePiece;
     // public static GenericEntry nte_midGOnly;
     
     // ---- Initial
@@ -50,57 +50,57 @@ public class WaltAutonBuilder {
         SmartDashboard.putData("First Scoring Chooser", firstScoringChooser);
         SmartDashboard.putData("First HP Station", firstToHPStationChooser);
 
-        nte_autonEntry = Shuffleboard.getTab("AutonChooser")
-                .add("Make", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_autonEntry = Shuffleboard.getTab("AutonChooser")
+        //         .add("Make", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_autonRobotPush = Shuffleboard.getTab("AutonChooser")
-                .add("Push another robot?", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_autonRobotPush = Shuffleboard.getTab("AutonChooser")
+        //         .add("Push another robot?", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_clearAll = Shuffleboard.getTab("AutonChooser")
-                .add("CLEAR AUTON", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_clearAll = Shuffleboard.getTab("AutonChooser")
+        //         .add("CLEAR AUTON", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_customAutonReady = Shuffleboard.getTab("AutonChooser")
-                .add("Custom Auton Ready", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_customAutonReady = Shuffleboard.getTab("AutonChooser")
+        //         .add("Custom Auton Ready", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_autonReadyToGo = Shuffleboard.getTab("AutonChooser")
-                .add("Auton Ready", false)
-                .withWidget(BuiltInWidgets.kBooleanBox)
-                .getEntry();
+        // nte_autonReadyToGo = Shuffleboard.getTab("AutonChooser")
+        //         .add("Auton Ready", false)
+        //         .withWidget(BuiltInWidgets.kBooleanBox)
+        //         .getEntry();
 
-        nte_autonName = Shuffleboard.getTab("AutonChooser")
-                .add("Auton", "No Auton Made")
-                .withWidget(BuiltInWidgets.kTextView)
-                .getEntry();
+        // nte_autonName = Shuffleboard.getTab("AutonChooser")
+        //         .add("Auton", "No Auton Made")
+        //         .withWidget(BuiltInWidgets.kTextView)
+        //         .getEntry();
 
-        // DEFINE PRESETS
+        // // DEFINE PRESETS
 
-        nte_taxiOnly = Shuffleboard.getTab("AutonChooser")
-                .add("Taxi Only", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_taxiOnly = Shuffleboard.getTab("AutonChooser")
+        //         .add("Taxi Only", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_rightThreePiece = Shuffleboard.getTab("AutonChooser")
-                .add("Right 3 Piece", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_rightThreePiece = Shuffleboard.getTab("AutonChooser")
+        //         .add("Right 3 Piece", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
         
-        nte_leftThreePiece = Shuffleboard.getTab("AutonChooser")
-                .add("Left 3 Piece", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_leftThreePiece = Shuffleboard.getTab("AutonChooser")
+        //         .add("Left 3 Piece", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
 
-        nte_midOnePiece = Shuffleboard.getTab("AutonChooser")
-                .add("Mid 1 Piece", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_midOnePiece = Shuffleboard.getTab("AutonChooser")
+        //         .add("Mid 1 Piece", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
         
     }
 

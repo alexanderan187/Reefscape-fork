@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.PubSubOptions;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -24,7 +24,7 @@ import static frc.robot.subsystems.Elevator.EleHeight.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
-import frc.robot.vision.Vision;
+// import frc.robot.vision.Vision;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
@@ -35,7 +35,7 @@ public class Superstructure {
     private final Coral m_coral;
     private final Finger m_finger;
     private final Elevator m_ele;
-    private final Optional<Vision> m_cam1;
+    // private final Optional<Vision> m_cam1;
     private final Funnel m_funnel;
 
     public final EventLoop stateEventLoop = new EventLoop();
@@ -122,7 +122,7 @@ public class Superstructure {
     public final Trigger stateTrg_climbing = new Trigger (stateEventLoop, () -> m_state == State.CLIMBING);
     public final Trigger stateTrg_climbed = new Trigger(stateEventLoop, () -> m_state == State.CLIMBED);
 
-    public static GenericEntry nte_autonOnCart;
+    // public static GenericEntry nte_autonOnCart;
 
     /* sm odds & ends */
     private final DoubleConsumer m_driverRumbler;
@@ -169,7 +169,7 @@ public class Superstructure {
         Coral coral,
         Finger finger,
         Elevator ele,
-        Optional<Vision> cam1,
+        // Optional<Vision> cam1,
         Funnel funnel,
         Trigger eleToHPReq,
         Trigger intakeReq,
@@ -191,7 +191,7 @@ public class Superstructure {
         m_coral = coral;
         m_finger = finger;
         m_ele = ele;
-        m_cam1 = cam1;
+        // m_cam1 = cam1;
         m_funnel = funnel;
         
         /* state change trigs */
@@ -234,10 +234,10 @@ public class Superstructure {
         configureSimTransitions();
         configureStateActions();
 
-        nte_autonOnCart = Shuffleboard.getTab("AutonChooser")
-                .add("Auton on Cart", false)
-                .withWidget(BuiltInWidgets.kToggleSwitch)
-                .getEntry();
+        // nte_autonOnCart = Shuffleboard.getTab("AutonChooser")
+        //         .add("Auton on Cart", false)
+        //         .withWidget(BuiltInWidgets.kToggleSwitch)
+        //         .getEntry();
     }
 
     // private Command takeCam1Snapshots() {
@@ -358,7 +358,7 @@ public class Superstructure {
             .onTrue(
                 Commands.sequence(
                     changeStateCmd(State.SCORING),
-                    Commands.waitSeconds(.5),
+                    Commands.wait(.5),
                     changeStateCmd(State.SCORED),
                     Commands.runOnce(() -> m_simScored = false)
                 ));
@@ -395,11 +395,11 @@ public class Superstructure {
                             Commands.parallel(
                                 m_coral.slowIntake()
                             ),
-                            Commands.waitSeconds(1),
+                            Commands.wait(1.0),
                             Commands.parallel(
                                 m_coral.slowIntakeReversal()
                             ),
-                            Commands.waitSeconds(0.05)
+                            Commands.wait(0.05)
                         )
                     )
                 )
@@ -458,10 +458,10 @@ public class Superstructure {
             .onTrue(
                 Commands.sequence(
                     m_coral.slowScore(),
-                    Commands.waitSeconds(0.1845),
+                    Commands.wait(0.1845),
                     m_ele.toHeightCoral(() -> L2),
                     m_finger.l1HelperCmd(),
-                    Commands.waitSeconds(0.18),
+                    Commands.wait(0.18),
                     m_finger.inCmd()
                 )
             );

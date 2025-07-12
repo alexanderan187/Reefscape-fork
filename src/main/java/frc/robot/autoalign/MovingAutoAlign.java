@@ -141,11 +141,11 @@ public class MovingAutoAlign {
 
                 headingController.reset(
                     curPose.getRotation().getRadians(),
-                    fieldRelativeChassisSpeeds.omegaRadiansPerSecond);
+                    fieldRelativeChassisSpeeds.omega);
                 vxController.reset(
-                    curPose.getX(), fieldRelativeChassisSpeeds.vxMetersPerSecond);
+                    curPose.getX(), fieldRelativeChassisSpeeds.vx);
                 vyController.reset(
-                    curPose.getY(), fieldRelativeChassisSpeeds.vyMetersPerSecond);
+                    curPose.getY(), fieldRelativeChassisSpeeds.vy);
             })
         .andThen(
             // so does this keep running over and over again?

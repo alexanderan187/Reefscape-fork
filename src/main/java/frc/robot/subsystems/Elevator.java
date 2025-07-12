@@ -20,8 +20,8 @@ import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -88,10 +88,10 @@ public class Elevator extends SubsystemBase {
     private VoltageOut m_voltageCtrlReq = new VoltageOut(0);
 
     private boolean m_isCoast = false;
-    private GenericEntry nte_coast = Shuffleboard.getTab(kLogTab)
-        .add("Coast", false)
-        .withWidget(BuiltInWidgets.kToggleSwitch)
-        .getEntry();
+    // private GenericEntry nte_coast = Shuffleboard.getTab(kLogTab)
+    //     .add("Coast", false)
+    //     .withWidget(BuiltInWidgets.kToggleSwitch)
+    //     .getEntry();
 
 
 
@@ -111,7 +111,7 @@ public class Elevator extends SubsystemBase {
         m_mech2d.getRoot("Elevator Root", 3, 0.0);
     private final MechanismLigament2d m_elevatorMech2d =
         m_mech2dRoot.append(
-            new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90, 6, new Color8Bit(Color.kRed))
+            new MechanismLigament2d("Elevator", m_elevatorSim.getPosition(), 90, 6, new Color8Bit(Color.kRed))
         );
 
     private final DoubleLogger log_elevatorDesiredPosition = WaltLogger.logDouble(kLogTab, "desiredPosition", PubSubOption.sendAll(true));
@@ -297,7 +297,7 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
 
-        setCoast(nte_coast.getBoolean(false));
+        // setCoast(nte_coast.getBoolean(false));
 
         log_eleAtHeight.accept(nearSetpoint());
         log_currentPosition.accept(getPulleyRotations());
@@ -315,14 +315,14 @@ public class Elevator extends SubsystemBase {
 
         m_elevatorSim.update(0.020);
 
-        log_elevatorSimPosition.accept(m_elevatorSim.getPositionMeters());
+        log_elevatorSimPosition.accept(m_elevatorSim.getPosition());
         var elevatorVelocity = 
-            metersToRotationVel(m_elevatorSim.getVelocityMetersPerSecond()* kGearRatio);
+            metersToRotationVel(m_elevatorSim.getVelocity()* kGearRatio);
 
-        frontSim.setRawRotorPosition(m_elevatorSim.getPositionMeters() * kGearRatio);
+        frontSim.setRawRotorPosition(m_elevatorSim.getPosition() * kGearRatio);
         frontSim.setRotorVelocity(elevatorVelocity);
 
-        m_elevatorMech2d.setLength(m_elevatorSim.getPositionMeters());
+        m_elevatorMech2d.setLength(m_elevatorSim.getPosition());
     }
 
     private static final double kInch = 0.169;

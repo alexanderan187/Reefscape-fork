@@ -50,9 +50,9 @@ public class AutoAlignUtils {
         Pose2d curPose = curState.Pose;
         ChassisSpeeds fieldRelativeChassisSpeeds = Swerve.getFieldRelativeChassisSpeeds(curState);
         Transform2d transformToFuture = new Transform2d(
-            fieldRelativeChassisSpeeds.vxMetersPerSecond * MovingAutoAlignK.kFutureDelta, 
-            fieldRelativeChassisSpeeds.vyMetersPerSecond * MovingAutoAlignK.kFutureDelta, 
-            Rotation2d.fromRadians(fieldRelativeChassisSpeeds.omegaRadiansPerSecond * MovingAutoAlignK.kFutureDelta));
+            fieldRelativeChassisSpeeds.vx * MovingAutoAlignK.kFutureDelta, 
+            fieldRelativeChassisSpeeds.vy * MovingAutoAlignK.kFutureDelta, 
+            Rotation2d.fromRadians(fieldRelativeChassisSpeeds.omega * MovingAutoAlignK.kFutureDelta));
         Pose2d futurePose = curPose.transformBy(transformToFuture);
         log_predictedFuturePose.accept(futurePose);
 
@@ -228,7 +228,7 @@ public class AutoAlignUtils {
         return isInTolerance(pose, pose2, linearTolerance, rotationalTolerance)
             && MathUtil.isNear(
                 0.0,
-                Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),
+                Math.hypot(speeds.vx, speeds.vy),
                 velocityTolerance
             );
     }
