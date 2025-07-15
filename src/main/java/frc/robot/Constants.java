@@ -253,7 +253,7 @@ public class Constants {
 
         public static final int kFrontCANID = 10;
         public static final int kBackCANID = 11;
-        public static final int kServoChannel = 0;
+        public static final int kServoChannel = 3;
 
         public static final double kLatchUnlockedPos = 0.85;
         public static final double kLatchLockedPos = 0;

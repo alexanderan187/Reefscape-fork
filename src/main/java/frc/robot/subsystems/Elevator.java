@@ -15,7 +15,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Servo;
@@ -88,10 +88,7 @@ public class Elevator extends SubsystemBase {
     private VoltageOut m_voltageCtrlReq = new VoltageOut(0);
 
     private boolean m_isCoast = false;
-    // private GenericEntry nte_coast = Shuffleboard.getTab(kLogTab)
-    //     .add("Coast", false)
-    //     .withWidget(BuiltInWidgets.kToggleSwitch)
-    //     .getEntry();
+    private BooleanEntry nte_coast = WaltLogger.booleanItem(kLogTab, "isCoast");
 
 
 
@@ -297,7 +294,7 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // setCoast(nte_coast.getBoolean(false));
+        setCoast(nte_coast.get(false));
 
         log_eleAtHeight.accept(nearSetpoint());
         log_currentPosition.accept(getPulleyRotations());

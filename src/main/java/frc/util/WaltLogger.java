@@ -26,6 +26,13 @@ public class WaltLogger {
         return Constants.kDebugLoggingEnabled;
     }
 
+    public static BooleanEntry booleanItem(String table, String name, PubSubOption... options) {
+
+        var topic = new BooleanTopic(NetworkTableInstance.getDefault().getTopic("Robot/" + table + "/" + name));
+
+        return topic.getEntry(false, options);
+    }
+
     public static IntLogger logInt(String table, String name, PubSubOption... options) {
         return new IntLogger(table, name, options);
     }
