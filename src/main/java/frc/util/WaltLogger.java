@@ -33,6 +33,13 @@ public class WaltLogger {
         return topic.getEntry(false, options);
     }
 
+    public static StringEntry stringItem(String table, String name, String defaultVal, PubSubOption... options) {
+
+        var topic = new StringTopic(NetworkTableInstance.getDefault().getTopic("Robot/" + table + "/" + name));
+
+        return topic.getEntry(defaultVal, options);
+    }
+
     public static IntLogger logInt(String table, String name, PubSubOption... options) {
         return new IntLogger(table, name, options);
     }

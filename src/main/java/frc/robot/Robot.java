@@ -471,11 +471,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // if (Superstructure.nte_autonOnCart.getBoolean(false)) {
-    //   Constants.kTestingAutonOnCart = true;
-    // } else {
-    //   Constants.kTestingAutonOnCart = false;
-    // }
+    if (Superstructure.nte_autonOnCart.get(false)) {
+      Constants.kTestingAutonOnCart = true;
+    } else {
+      Constants.kTestingAutonOnCart = false;
+    }
 
     // if (autonNotMade) {
       // check if the AUTON READY button has been pressed
@@ -490,7 +490,7 @@ public class Robot extends TimedRobot {
     //       List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
     //     ));
 
-    //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
+        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
     //     WaltAutonBuilder.nte_rightThreePiece.setBoolean(false);
     //   } 
 

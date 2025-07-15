@@ -1,8 +1,11 @@
 package frc.robot.autons;
 
+import static frc.robot.Constants.AlgaeK.kLogTab;
+
 import java.util.ArrayList;
 
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.BooleanEntry;
+import edu.wpi.first.networktables.StringEntry;
 // import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 // import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -11,22 +14,23 @@ import frc.robot.autons.TrajsAndLocs.HPStation;
 import frc.robot.autons.TrajsAndLocs.ReefLocs;
 import frc.robot.autons.TrajsAndLocs.StartingLocs;
 import frc.robot.subsystems.Elevator.EleHeight;
+import frc.util.WaltLogger;
 
 public class WaltAutonBuilder {
-    // public static GenericEntry nte_autonEntry;
-    // public static GenericEntry nte_customAutonReady;
-    // public static GenericEntry nte_autonRobotPush;  // button to select if we are pushing another robot b4 starting path
-    // public static GenericEntry nte_clearAll;
+    public static BooleanEntry nte_autonEntry = WaltLogger.booleanItem(kLogTab, "autonEntry");
+    public static BooleanEntry nte_customAutonReady = WaltLogger.booleanItem(kLogTab, "customAutonReady");
+    public static BooleanEntry nte_autonRobotPush = WaltLogger.booleanItem(kLogTab, "autonRobotPush");  // button to select if we are pushing another robot b4 starting path
+    public static BooleanEntry nte_clearAll = WaltLogger.booleanItem(kLogTab, "clearAll");
 
-    // public static GenericEntry nte_autonReadyToGo;  // to let the user know that an auton is loaded
-    // public static GenericEntry nte_autonName;
+    public static BooleanEntry nte_autonReadyToGo = WaltLogger.booleanItem(kLogTab, "autonReadyToGo");  // to let the user know that an auton is loaded
+    public static StringEntry nte_autonName = WaltLogger.stringItem(kLogTab, "autonName", "No Auton Made");
 
-    // // DEFINE PRESET BUTTONS
-    // public static GenericEntry nte_taxiOnly;
-    // public static GenericEntry nte_rightThreePiece;
-    // public static GenericEntry nte_leftThreePiece;
-    // public static GenericEntry nte_midOnePiece;
-    // public static GenericEntry nte_midGOnly;
+    // DEFINE PRESET BUTTONS
+    public static BooleanEntry nte_taxiOnly = WaltLogger.booleanItem(kLogTab, "taxiOnly");
+    public static BooleanEntry nte_rightThreePiece = WaltLogger.booleanItem(kLogTab, "rightThreePiece") ;
+    public static BooleanEntry nte_leftThreePiece = WaltLogger.booleanItem(kLogTab, "leftThreePiece");
+    public static BooleanEntry nte_midOnePiece = WaltLogger.booleanItem(kLogTab, "midOnePiece");
+    public static BooleanEntry nte_midGOnly = WaltLogger.booleanItem(kLogTab, "midGOnly");
     
     // ---- Initial
     // Define Initial Choosers
