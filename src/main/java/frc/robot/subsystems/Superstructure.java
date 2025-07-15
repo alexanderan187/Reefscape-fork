@@ -9,6 +9,7 @@ import java.util.function.DoubleConsumer;
 
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.PubSubOptions;
@@ -122,7 +123,7 @@ public class Superstructure {
     public final Trigger stateTrg_climbing = new Trigger (stateEventLoop, () -> m_state == State.CLIMBING);
     public final Trigger stateTrg_climbed = new Trigger(stateEventLoop, () -> m_state == State.CLIMBED);
 
-    // public static GenericEntry nte_autonOnCart;
+    public static BooleanEntry nte_autonOnCart = WaltLogger.booleanItem(kLogTab, "Auton on Cart");
 
     /* sm odds & ends */
     private final DoubleConsumer m_driverRumbler;
@@ -233,11 +234,6 @@ public class Superstructure {
         configureStateTransitions();
         configureSimTransitions();
         configureStateActions();
-
-        // nte_autonOnCart = Shuffleboard.getTab("AutonChooser")
-        //         .add("Auton on Cart", false)
-        //         .withWidget(BuiltInWidgets.kToggleSwitch)
-        //         .getEntry();
     }
 
     // private Command takeCam1Snapshots() {
