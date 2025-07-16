@@ -25,7 +25,12 @@ import static frc.robot.subsystems.Elevator.EleHeight.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
+import frc.util.Elastic;
+import frc.util.NTPublisherFactory;
 // import frc.robot.vision.Vision;
+import frc.util.Elastic.*;
+import edu.wpi.first.networktables.*;
+import frc.util.NTPublisherFactory.*;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
@@ -132,6 +137,7 @@ public class Superstructure {
     /* loggin' */
     private DoubleLogger log_stateIdx = WaltLogger.logDouble(kLogTab, "state idx", PubSubOption.sendAll(true));
     private StringLogger log_stateName = WaltLogger.logString(kLogTab, "state name", PubSubOption.sendAll(true));
+    private StringLogger log_stateTrans = WaltLogger.logString(kLogTab, "state trans", PubSubOption.sendAll(true));
     
     /* logs: state trans */
     private BooleanLogger log_autonToHPReq = WaltLogger.logBoolean(kLogTab, "AUTON to HP req");
@@ -217,7 +223,7 @@ public class Superstructure {
         trg_teleopL1Req = L1Req;
         trg_teleopL2Req = L2Req;
         trg_teleopL3Req = L3Req;
-        trg_teleopL4Req = L4Req;
+        trg_teleopL4Req = new Trigger(() -> false); //L4Req
         trg_teleopScoreReq = scoreReq;
         trg_dealgaeL2Req = algaeRemovalL2Req;
         trg_dealgaeL3Req = algaeRemovalL3Req;
@@ -492,7 +498,20 @@ public class Superstructure {
             if (newState == m_state) {
                 return;
             }
-            System.out.println("[SUPER] Changing state from (" + m_state.name + ") to (" + newState.name + ")");
+
+            String str = "[SUPER] Changing state from (" + m_state.name + ") to (" + newState.name + ")";
+            System.out.println(str);
+
+            Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, str, "")
+                .withNoAutoDismiss()
+                .withAutomaticHeight()
+                );
+
+            log_stateTrans.accept(str);
+
+            NTPublisherFactory.makeStringPub(kLogTab, str);
+            // StringTopic stateTrans = new StringTopic()
+
             m_state = newState;
             log_stateIdx.accept(m_state.idx);
             log_stateName.accept(m_state.name);
