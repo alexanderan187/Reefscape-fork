@@ -110,7 +110,7 @@ public class Robot extends TimedRobot {
   private final BooleanLogger log_povLeft = WaltLogger.logBoolean("DPad", "povLeft");
   private final BooleanLogger log_povUp = WaltLogger.logBoolean("DPad", "povUP");
   
-  //private final Trigger trg_leftTeleopAutoAlign = driver.x();
+  private final Trigger trg_leftTeleopAutoAlign = driver.x();
   private final Trigger trg_rightTeleopAutoAlign = driver.a();
 
   // private final Trigger trg_teleopEleHeightReq;
@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
   private final Trigger trg_toL1 = manipulator.pov(4);
   private final Trigger trg_toL2 = manipulator.pov(2);
   private final Trigger trg_toL3 = manipulator.pov(8);
-  private final Trigger trg_toL4 = manipulator.pov(1); //this is negated because when it is idle, its returning the angle zero, which is pov up
+  private final Trigger trg_toL4 = manipulator.pov(1);
 
   private final Trigger trg_teleopScoreReq = driver.rightTrigger(); 
 
