@@ -223,7 +223,7 @@ public class Superstructure {
         trg_teleopL1Req = L1Req;
         trg_teleopL2Req = L2Req;
         trg_teleopL3Req = L3Req;
-        trg_teleopL4Req = new Trigger(() -> false); //L4Req
+        trg_teleopL4Req = L4Req; //new Trigger(() -> false); 
         trg_teleopScoreReq = scoreReq;
         trg_dealgaeL2Req = algaeRemovalL2Req;
         trg_dealgaeL3Req = algaeRemovalL3Req;

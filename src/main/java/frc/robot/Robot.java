@@ -19,6 +19,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.datalog.BooleanLogEntry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -104,7 +105,12 @@ public class Robot extends TimedRobot {
   private final DoubleLogger log_fieldX = WaltLogger.logDouble("Swerve", "calculated field x speed");
   private final DoubleLogger log_fieldY = WaltLogger.logDouble("Swerve", "calculate field y speed");
 
-  private final Trigger trg_leftTeleopAutoAlign = driver.x();
+  private final BooleanLogger log_povDown = WaltLogger.logBoolean("DPad", "povDown");
+  private final BooleanLogger log_povRight = WaltLogger.logBoolean("DPad", "povRight");
+  private final BooleanLogger log_povLeft = WaltLogger.logBoolean("DPad", "povLeft");
+  private final BooleanLogger log_povUp = WaltLogger.logBoolean("DPad", "povUP");
+  
+  //private final Trigger trg_leftTeleopAutoAlign = driver.x();
   private final Trigger trg_rightTeleopAutoAlign = driver.a();
 
   // private final Trigger trg_teleopEleHeightReq;
@@ -117,7 +123,7 @@ public class Robot extends TimedRobot {
   private final Trigger trg_toL1 = manipulator.povDown();
   private final Trigger trg_toL2 = manipulator.povRight();
   private final Trigger trg_toL3 = manipulator.povLeft();
-  private final Trigger trg_toL4 = manipulator.povUp();
+  private final Trigger trg_toL4 = manipulator.povUp().negate(); //this is negated because when it is idle, its returning the angle zero, which is pov up
 
   private final Trigger trg_teleopScoreReq = driver.rightTrigger(); 
 
@@ -437,6 +443,11 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     superstructure.periodic();
+
+    log_povDown.accept(trg_toL1);
+    log_povRight.accept(trg_toL2);
+    log_povLeft.accept(trg_toL3);
+    log_povUp.accept(trg_toL4);
     
     // loops through each camera and adds its pose estimation to the drivetrain pose estimator if required
     // for (Vision camera : cameras) {
