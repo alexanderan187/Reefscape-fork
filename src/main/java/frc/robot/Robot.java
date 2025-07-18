@@ -120,10 +120,10 @@ public class Robot extends TimedRobot {
   private final Trigger trg_toHPReq = manipulator.rightBumper();
   private final Trigger trg_intakeReq = manipulator.rightTrigger();
   
-  private final Trigger trg_toL1 = manipulator.povDown();
-  private final Trigger trg_toL2 = manipulator.povRight();
-  private final Trigger trg_toL3 = manipulator.povLeft();
-  private final Trigger trg_toL4 = manipulator.povUp().negate(); //this is negated because when it is idle, its returning the angle zero, which is pov up
+  private final Trigger trg_toL1 = manipulator.pov(4);
+  private final Trigger trg_toL2 = manipulator.pov(2);
+  private final Trigger trg_toL3 = manipulator.pov(8);
+  private final Trigger trg_toL4 = manipulator.pov(1); //this is negated because when it is idle, its returning the angle zero, which is pov up
 
   private final Trigger trg_teleopScoreReq = driver.rightTrigger(); 
 
