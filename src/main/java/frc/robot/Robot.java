@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -139,7 +140,6 @@ public class Robot extends TimedRobot {
   // simulation
   private final Trigger trg_simBotBeamBreak = manipulator.leftStick();
   private final Trigger trg_simTopBeamBreak = manipulator.rightStick();
- 
 
   // override button
   private final Trigger trg_driverDanger = driver.b();
@@ -150,17 +150,36 @@ public class Robot extends TimedRobot {
 
   private final DoubleLogger log_rio6VRailCurrent = WaltLogger.logDouble("Rio", "6VRailCurrent");
 
-  private boolean autonNotMade = true;
-  private boolean readyToMakeAuton = false;
-  private boolean midAuton = false;
-  private String autonName = "No Auton Made";
-
   // istg if you touch this outside of updateStaticField
   public static Field2d robotField = null;
   private final Timer lastGotTagMsmtTimer = new Timer();
   private final BooleanLogger log_visionSeenPastSecond = new BooleanLogger("Robot", "VisionSeenLastSec");
 
+  // --- AUTONCHOOSER
   private Optional<WaltAutonFactory> waltAutonFactory;
+  private boolean isAutonMade = false;
+  private boolean clearAll = false;
+  private String autonName = "No Auton Made";
+  private boolean autonFullyMade = false;
+
+  // autons
+  public Optional<WaltAutonFactory> auton_right = Optional.of(autonFactoryFactory(
+      StartingLocs.RIGHT,
+      List.of(REEF_E, REEF_D, REEF_C, REEF_B),
+      List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+      List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
+    )
+  );
+
+  public Optional<WaltAutonFactory> auton_left = Optional.of(autonFactoryFactory(
+      StartingLocs.LEFT, 
+      List.of(REEF_J, REEF_K, REEF_L, REEF_A),
+      List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+      List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
+    )
+  );
+
+  public boolean auton_midOne = false;
 
   // public void updateStaticField() {
   //   Robot.robotField = visionSim.getSimDebugField();
@@ -239,7 +258,7 @@ public class Robot extends TimedRobot {
   //   }
   // };
 
-  private WaltAutonFactory autonFactoryFactory(
+  public WaltAutonFactory autonFactoryFactory(
     StartingLocs startLoc, List<ReefLocs> scoreLocs,
     List<EleHeight> heights, List<HPStation> hpStations) {
       return new WaltAutonFactory(
@@ -430,9 +449,7 @@ public class Robot extends TimedRobot {
 	}
   
   @Override
-  public void robotInit(){
-    WaltAutonBuilder.configureFirstCycle();
-    
+  public void robotInit(){    
     // addPeriodic(() -> superstructure.periodic(), 0.01);
 
     SmartDashboard.putData("ReefPoses", FieldConstants.kReefPosesField2d);
@@ -478,6 +495,8 @@ public class Robot extends TimedRobot {
         List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
       )
     );
+
+    WaltAutonBuilder.initialize();
   }
 
   @Override
@@ -488,6 +507,38 @@ public class Robot extends TimedRobot {
       Constants.kTestingAutonOnCart = false;
     }
 
+    if (!isAutonMade) {
+      if (WaltAutonBuilder.sub_right.getAsBoolean()) {
+        waltAutonFactory = auton_right;
+        isAutonMade = true;
+        WaltAutonBuilder.pub_right.set(false);
+      }
+      else if (WaltAutonBuilder.sub_left.getAsBoolean()) {
+        waltAutonFactory = auton_left;
+        isAutonMade = true;
+        WaltAutonBuilder.pub_left.set(false);
+      }
+      else if (WaltAutonBuilder.sub_midOne.getAsBoolean()) {
+        auton_midOne = true;
+        isAutonMade = true;
+        WaltAutonBuilder.pub_midOne.set(false);
+      }
+    } else {
+      if (!autonFullyMade) {
+        //clear first
+
+        if (auton_midOne) {
+          m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().midAuton().cmd());
+        } else {
+          m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
+        }
+
+        autonFullyMade = true;
+      }
+
+      isAutonMade = false;
+      autonFullyMade = false;
+    }
     // if (autonNotMade) {
       // check if the AUTON READY button has been pressed
       // readyToMakeAuton = WaltAutonBuilder.nte_autonEntry.getBoolean(false);
