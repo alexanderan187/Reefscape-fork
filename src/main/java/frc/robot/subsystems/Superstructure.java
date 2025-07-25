@@ -503,7 +503,7 @@ public class Superstructure {
             System.out.println(str);
 
             Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, str, "")
-                .withNoAutoDismiss()
+                // .withNoAutoDismiss()
                 .withAutomaticHeight()
                 );
 
