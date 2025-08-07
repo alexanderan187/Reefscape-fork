@@ -27,7 +27,7 @@ import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
 import frc.util.Elastic;
 import frc.util.NTPublisherFactory;
-// import frc.robot.vision.Vision;
+import frc.robot.vision.Vision;
 import frc.util.Elastic.*;
 import edu.wpi.first.networktables.*;
 import frc.util.NTPublisherFactory.*;
@@ -41,7 +41,7 @@ public class Superstructure {
     private final Coral m_coral;
     private final Finger m_finger;
     private final Elevator m_ele;
-    // private final Optional<Vision> m_cam1;
+    private final Optional<Vision> m_cam1;
     private final Funnel m_funnel;
 
     public final EventLoop stateEventLoop = new EventLoop();
@@ -176,7 +176,7 @@ public class Superstructure {
         Coral coral,
         Finger finger,
         Elevator ele,
-        // Optional<Vision> cam1,
+        Optional<Vision> cam1,
         Funnel funnel,
         Trigger eleToHPReq,
         Trigger intakeReq,
@@ -198,7 +198,7 @@ public class Superstructure {
         m_coral = coral;
         m_finger = finger;
         m_ele = ele;
-        // m_cam1 = cam1;
+        m_cam1 = cam1;
         m_funnel = funnel;
         
         /* state change trigs */
@@ -242,13 +242,13 @@ public class Superstructure {
         configureStateActions();
     }
 
-    // private Command takeCam1Snapshots() {
-    //     return Commands.runOnce(() -> {
-    //         if (m_cam1.isPresent()) {
-    //             m_cam1.get().takeBothSnapshots();
-    //         }
-    //     });
-    // }
+    private Command takeCam1Snapshots() {
+        return Commands.runOnce(() -> {
+            if (m_cam1.isPresent()) {
+                m_cam1.get().takeBothSnapshots();
+            }
+        });
+    }
     
     private void configureStateTransitions() {
         (stateTrg_idle.and(trg_teleopEleToHPReq).and(trg_inOverride.negate()).and(RobotModeTriggers.teleop()))

@@ -10,7 +10,7 @@ import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-// import org.photonvision.EstimatedRobotPose;
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -59,8 +59,8 @@ import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
-// import frc.robot.vision.Vision;
-// import frc.robot.vision.VisionSim;
+import frc.robot.vision.Vision;
+import frc.robot.vision.VisionSim;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Algae.State;
 
@@ -91,14 +91,14 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   // VisionSim could probably be static or a singleton instead of this reference mess but that's extra work to potentially break something
-  // private final VisionSim visionSim = new VisionSim();
-  // private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
-  //   VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
-  // private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
-  //   VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
+  private final VisionSim visionSim = new VisionSim();
+  private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
+    VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
+  private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
+    VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
 
-  // // this should be updated with all of our cameras
-  // private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam removed readded and ready to rumble
+  // this should be updated with all of our cameras
+  private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam removed readded and ready to rumble
 
   private final DoubleLogger log_stickDesiredFieldX = WaltLogger.logDouble("Swerve", "stick desired teleop x");
   private final DoubleLogger log_stickDesiredFieldY = WaltLogger.logDouble("Swerve", "stick desired teleop y");
@@ -181,9 +181,9 @@ public class Robot extends TimedRobot {
 
   public boolean auton_midOne = false;
 
-  // public void updateStaticField() {
-  //   Robot.robotField = visionSim.getSimDebugField();
-  // }
+  public void updateStaticField() {
+    Robot.robotField = visionSim.getSimDebugField();
+  }
 
   public Robot() {
     SignalLogger.start();
@@ -194,7 +194,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      // Optional.of(eleForwardsCam),
+      Optional.of(eleForwardsCam),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -217,7 +217,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      // Optional.empty(),
+      Optional.empty(),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -247,16 +247,16 @@ public class Robot extends TimedRobot {
     drivetrain.registerTelemetry(logger::telemeterize);
 
 
-    // updateStaticField();
+    updateStaticField();
     configureBindings();
     // configureTestBindings();
   }
 
-  // private final Runnable cameraSnapshotFunc = () -> {
-  //   for (Vision camera : cameras) {
-  //     camera.takeBothSnapshots();
-  //   }
-  // };
+  private final Runnable cameraSnapshotFunc = () -> {
+    for (Vision camera : cameras) {
+      camera.takeBothSnapshots();
+    }
+  };
 
   public WaltAutonFactory autonFactoryFactory(
     StartingLocs startLoc, List<ReefLocs> scoreLocs,
@@ -267,13 +267,13 @@ public class Robot extends TimedRobot {
       );
   }
 
-  // Command autoAlignCmd(boolean rightReef) {
-  //   return MovingAutoAlign.autoAlignWithIntermediateTransformUntilInTolerances(
-  //     drivetrain, 
-  //     () -> AutoAlignUtils.getMostLikelyScorePose(drivetrain.getState(), rightReef), 
-  //     () -> SharedAutoAlignK.kIntermediatePoseTransform
-  //   ).alongWith(Commands.runOnce(cameraSnapshotFunc));
-  // }
+  Command autoAlignCmd(boolean rightReef) {
+    return MovingAutoAlign.autoAlignWithIntermediateTransformUntilInTolerances(
+      drivetrain, 
+      () -> AutoAlignUtils.getMostLikelyScorePose(drivetrain.getState(), rightReef), 
+      () -> SharedAutoAlignK.kIntermediatePoseTransform
+    ).alongWith(Commands.runOnce(cameraSnapshotFunc));
+  }
 
   // checks for finger in unsafe place
   // no it doesnt lol. it prolly should tho.
@@ -391,12 +391,12 @@ public class Robot extends TimedRobot {
       )
     );
 
-    // trg_leftTeleopAutoAlign.whileTrue(
-    //   autoAlignCmd(false)
-    // );
-    // trg_rightTeleopAutoAlign.whileTrue(
-    //   autoAlignCmd(true)
-    // );
+    trg_leftTeleopAutoAlign.whileTrue(
+      autoAlignCmd(false)
+    );
+    trg_rightTeleopAutoAlign.whileTrue(
+      autoAlignCmd(true)
+    );
     trg_driverDanger.and(driver.rightTrigger()).onTrue(superstructure.forceShoot());
     
     trg_manipDanger.and(trg_intakeReq).onTrue(superstructure.forceStateToIntake());
