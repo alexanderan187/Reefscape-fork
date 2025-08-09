@@ -502,10 +502,10 @@ public class Superstructure {
             String str = "[SUPER] Changing state from (" + m_state.name + ") to (" + newState.name + ")";
             System.out.println(str);
 
-            Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, str, "")
-                .withNoAutoDismiss()
-                .withAutomaticHeight()
-                );
+            // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, str, "")
+            //     .withNoAutoDismiss()
+            //     .withAutomaticHeight()
+            //     );
 
             log_stateTrans.accept(str);
 

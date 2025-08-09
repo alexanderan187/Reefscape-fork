@@ -31,7 +31,7 @@ public class WaltAutonBuilder {
 
     // --- TOPICS
     // actions
-    public static BooleanTopic BT_isAutonMade = nte_inst.getBooleanTopic("/AutonChooser/isAutonMade");
+    public static BooleanTopic BT_makeAuton = nte_inst.getBooleanTopic("/AutonChooser/isAutonMade");
     public static BooleanTopic BT_clearAll = nte_inst.getBooleanTopic("/AutonChooser/clearAll");
     public static StringTopic ST_autonName = nte_inst.getStringTopic("/AutonChooser/autonName");
 
@@ -41,7 +41,7 @@ public class WaltAutonBuilder {
     
     // --- PUBLISHERS
     // actions
-    public static BooleanPublisher pub_isAutonMade;
+    public static BooleanPublisher pub_makeAuton;
     public static BooleanPublisher pub_clearAll;
     public static StringPublisher pub_autonName;
 
@@ -51,7 +51,7 @@ public class WaltAutonBuilder {
     public static BooleanPublisher pub_midOne;
 
     // --- SUBSCRIBERS
-    public static BooleanSubscriber sub_isAutonMade;
+    public static BooleanSubscriber sub_makeAuton;
     public static BooleanSubscriber sub_clearAll;
     public static StringSubscriber sub_autonName;
 
@@ -62,7 +62,7 @@ public class WaltAutonBuilder {
 
     public static void initialize() {
         // PUBLISHING TO TOPICS
-        pub_isAutonMade = BT_isAutonMade.publish();
+        pub_makeAuton = BT_makeAuton.publish();
         pub_clearAll = BT_clearAll.publish();
         pub_autonName = ST_autonName.publish();
         
@@ -71,7 +71,7 @@ public class WaltAutonBuilder {
         pub_midOne = BT_midOne.publish();
 
         // SUBSCRIBING TO TOPICS
-        sub_isAutonMade = BT_isAutonMade.subscribe(false);
+        sub_makeAuton = BT_makeAuton.subscribe(false);
         sub_clearAll = BT_clearAll.subscribe(false);
         sub_autonName = ST_autonName.subscribe("No Auton Made");
 
@@ -80,7 +80,7 @@ public class WaltAutonBuilder {
         sub_midOne = BT_midOne.subscribe(false);
 
         // PUBLISHER DEFAULTS
-        pub_isAutonMade.setDefault(false);
+        pub_makeAuton.setDefault(false);
         pub_clearAll.setDefault(false);
         pub_autonName.setDefault("No Auton Made");
 

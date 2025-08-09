@@ -160,26 +160,14 @@ public class Robot extends TimedRobot {
   private boolean isAutonMade = false;
   private boolean clearAll = false;
   private String autonName = "No Auton Made";
-  private boolean autonFullyMade = false;
+  private boolean autonMade = false;
 
   // autons
-  public Optional<WaltAutonFactory> auton_right = Optional.of(autonFactoryFactory(
-      StartingLocs.RIGHT,
-      List.of(REEF_E, REEF_D, REEF_C, REEF_B),
-      List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-      List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-    )
-  );
+  public Optional<WaltAutonFactory> auton_right;
 
-  public Optional<WaltAutonFactory> auton_left = Optional.of(autonFactoryFactory(
-      StartingLocs.LEFT, 
-      List.of(REEF_J, REEF_K, REEF_L, REEF_A),
-      List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-      List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
-    )
-  );
+  public Optional<WaltAutonFactory> auton_left;
 
-  public boolean auton_midOne = false;
+  public boolean auton_midOne;
 
   public void updateStaticField() {
     Robot.robotField = visionSim.getSimDebugField();
@@ -250,6 +238,25 @@ public class Robot extends TimedRobot {
     updateStaticField();
     configureBindings();
     // configureTestBindings();
+
+    // --- AUTONS
+    auton_midOne = false;
+
+    auton_left = Optional.of(autonFactoryFactory(
+      StartingLocs.LEFT, 
+      List.of(REEF_J, REEF_K, REEF_L, REEF_A),
+      List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+      List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
+      )
+    );
+
+    auton_right  = Optional.of(autonFactoryFactory(
+        StartingLocs.RIGHT,
+        List.of(REEF_E, REEF_D, REEF_C, REEF_B),
+        List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
+        List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
+      )
+    );
   }
 
   private final Runnable cameraSnapshotFunc = () -> {
@@ -336,12 +343,12 @@ public class Robot extends TimedRobot {
           )
         );
 
-      // trg_leftTeleopAutoAlign.whileTrue(
-      //   autoAlignCmd(false)
-      // );
-      // trg_rightTeleopAutoAlign.whileTrue(
-      //   autoAlignCmd(true)
-      // );
+      trg_leftTeleopAutoAlign.whileTrue(
+        autoAlignCmd(false)
+      );
+      trg_rightTeleopAutoAlign.whileTrue(
+        autoAlignCmd(true)
+      );
 
     // driver.start().whileTrue(drivetrain.wheelRadiusCharacterization(1));
   }
@@ -460,23 +467,18 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     superstructure.periodic();
-
-    log_povDown.accept(trg_toL1);
-    log_povRight.accept(trg_toL2);
-    log_povLeft.accept(trg_toL3);
-    log_povUp.accept(trg_toL4);
     
     // loops through each camera and adds its pose estimation to the drivetrain pose estimator if required
-    // for (Vision camera : cameras) {
-    //   Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
-    //   if (estimatedPoseOptional.isPresent()) {
-    //     EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
-    //     Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
-    //     var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
-    //     drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
-    //     lastGotTagMsmtTimer.restart();
-    //   }
-    // }
+    for (Vision camera : cameras) {
+      Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
+      if (estimatedPoseOptional.isPresent()) {
+        EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
+        Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
+        var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
+        drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
+        lastGotTagMsmtTimer.restart();
+      }
+    }
 
     boolean visionSeenPastSec = !lastGotTagMsmtTimer.hasElapsed(1);
     log_visionSeenPastSecond.accept(visionSeenPastSec);
@@ -487,14 +489,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     // set the auton to rightside by default if nothing is picked and auton j starts
-    waltAutonFactory = Optional.of(
-      autonFactoryFactory(
-        StartingLocs.RIGHT, 
-        List.of(REEF_E, REEF_D, REEF_C),
-        List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4), 
-        List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-      )
-    );
+    waltAutonFactory = auton_right;
+    m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
 
     WaltAutonBuilder.initialize();
   }
@@ -506,136 +502,77 @@ public class Robot extends TimedRobot {
     } else {
       Constants.kTestingAutonOnCart = false;
     }
+    
+    if (!autonMade) {
+      // ALL OF THE COMMENTED OUT ITEMS ARE FOR DEBUGGING THE PUBLISHER BOOLEAN VALUES
 
-    if (!isAutonMade) {
       if (WaltAutonBuilder.sub_right.getAsBoolean()) {
         waltAutonFactory = auton_right;
-        isAutonMade = true;
+        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right Auton Defined"));
         WaltAutonBuilder.pub_right.set(false);
+        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
       }
-      else if (WaltAutonBuilder.sub_left.getAsBoolean()) {
+      if (WaltAutonBuilder.sub_left.getAsBoolean()) {
         waltAutonFactory = auton_left;
-        isAutonMade = true;
+        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left Auton Defined"));
         WaltAutonBuilder.pub_left.set(false);
+        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "left " + WaltAutonBuilder.sub_left.getAsBoolean(), ""));
       }
-      else if (WaltAutonBuilder.sub_midOne.getAsBoolean()) {
+      if (WaltAutonBuilder.sub_midOne.getAsBoolean()) {
         auton_midOne = true;
-        isAutonMade = true;
+        Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "MidOne Auton Defined"));
         WaltAutonBuilder.pub_midOne.set(false);
+        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "midOne " + WaltAutonBuilder.sub_midOne.getAsBoolean(), ""));
       }
-    } else {
-      if (!autonFullyMade) {
-        //clear first
 
+      if (WaltAutonBuilder.sub_makeAuton.getAsBoolean() && waltAutonFactory.isPresent()) {
         if (auton_midOne) {
           m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().midAuton().cmd());
+          Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton MADE", "MidOne Auton MADE"));
         } else {
           m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
+          Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton MADE", "SIDE Auton MADE"));
         }
 
-        autonFullyMade = true;
+        WaltAutonBuilder.pub_makeAuton.set(false);
+        // System.out.println("make auton " + WaltAutonBuilder.sub_makeAuton);
+        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "make auton " + WaltAutonBuilder.sub_makeAuton.getAsBoolean(), ""));
+        autonMade = true;
       }
-
-      isAutonMade = false;
-      autonFullyMade = false;
     }
-    // if (autonNotMade) {
-      // check if the AUTON READY button has been pressed
-      // readyToMakeAuton = WaltAutonBuilder.nte_autonEntry.getBoolean(false);
 
-      // --- PRESET AUTONS
-    //   if (WaltAutonBuilder.nte_rightThreePiece.getBoolean(false)) {
-    //     waltAutonFactory = Optional.of(autonFactoryFactory(
-    //       StartingLocs.RIGHT, 
-    //       List.of(REEF_E, REEF_D, REEF_C, REEF_B), 
-    //       List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-    //       List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-    //     ));
+    if (WaltAutonBuilder.sub_clearAll.getAsBoolean() && waltAutonFactory.isPresent()) {
+      waltAutonFactory = Optional.empty();
+      Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "AUTON CLEARED", "PLEASE MAKE AN AUTON"));
+      m_autonomousCommand = Commands.print("========== No Auton Command Selected ==========");
 
-        // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
-    //     WaltAutonBuilder.nte_rightThreePiece.setBoolean(false);
-    //   } 
-
-    //   if (WaltAutonBuilder.nte_leftThreePiece.getBoolean(false)) {
-    //     waltAutonFactory = Optional.of(autonFactoryFactory(
-    //       StartingLocs.LEFT, 
-    //       List.of(REEF_J, REEF_K, REEF_L, REEF_A),
-    //       List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-    //       List.of(HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT, HPStation.HP_LEFT)
-    //     ));
-
-    //     // autonName = "Left 3 Piece: ";
-    //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
-    //     WaltAutonBuilder.nte_leftThreePiece.setBoolean(false);
-    //   }
-
-    //   if(WaltAutonBuilder.nte_midOnePiece.getBoolean(false)) {
-    //     midAuton = true;
-    //     // tbh none of these values get used lol
-    //     waltAutonFactory = Optional.of(autonFactoryFactory(
-    //       StartingLocs.MID_G,
-    //       List.of(REEF_G),
-    //       List.of(EleHeight.L4),
-    //       List.of(HPStation.HP_RIGHT)
-    //     ));
-
-    //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left 3 piece auton generated"));
-    //     WaltAutonBuilder.nte_midOnePiece.setBoolean(false);
-    //   }
-
-    
-    //   // fail-case (no auton selected) - do nothing (its no longer that now)
-    //   if (readyToMakeAuton && waltAutonFactory.isEmpty()) {
-    //     waltAutonFactory = Optional.of(autonFactoryFactory(
-    //       StartingLocs.RIGHT,
-    //       List.of(REEF_E, REEF_D, REEF_C, REEF_B),
-    //       List.of(EleHeight.L4, EleHeight.L4, EleHeight.L4, EleHeight.L4),
-    //       List.of(HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT, HPStation.HP_RIGHT)
-    //     ));
-
-    //     // autonName = "Right 3 Piece: E-L2, D-L4, C-L4";
-    //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right 3 piece auton generated"));
-    //   }
-
-    //   // ---- SETS THE AUTON
-    //   if (readyToMakeAuton && waltAutonFactory.isPresent()) {
-    //     if (midAuton) {
-    //       m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().midAuton().cmd());
-    //     } else {
-    //       m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
-    //     }
-
-    //     autonNotMade = false;
-    //     autonName = waltAutonFactory.get().toString();
-    //     WaltAutonBuilder.nte_autonEntry.setBoolean(false);
-    //     WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
-    //     WaltAutonBuilder.nte_autonName.setString(autonName);
-    //     Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CREATED", "Ready for Autonomous!"));
-    //   }
-
-    // }
-
-    // // if user hits clearAll button, the auton process resets
-    // if (WaltAutonBuilder.nte_clearAll.getBoolean(false)) {
-    //   waltAutonFactory = Optional.empty();
-    //   m_autonomousCommand = Commands.print("========== No Auton Command Selected ==========");
-
-    //   autonNotMade = true;
-    //   autonName = "No Auton Made";
-    //   WaltAutonBuilder.nte_autonEntry.setBoolean(false);
-    //   WaltAutonBuilder.nte_clearAll.setBoolean(false);
-
-    //   WaltAutonBuilder.nte_autonReadyToGo.setBoolean(!autonNotMade);
-    //   WaltAutonBuilder.nte_autonName.setString(autonName);
+      WaltAutonBuilder.pub_clearAll.set(false);
+      WaltAutonBuilder.pub_makeAuton.set(false);
+      WaltAutonBuilder.pub_midOne.set(false);
+      WaltAutonBuilder.pub_left.set(false);
+      WaltAutonBuilder.pub_right.set(false);
+      // System.out.println("clear all sub" + WaltAutonBuilder.sub_clearAll.getAsBoolean());
+      // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "clear all " + WaltAutonBuilder.sub_clearAll.getAsBoolean(), ""));
+      // System.out.println("make auto sub" + WaltAutonBuilder.sub_makeAuton.getAsBoolean());
+      // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "make auto " + WaltAutonBuilder.sub_makeAuton.getAsBoolean(), ""));
+      // System.out.println("midOne sub" + WaltAutonBuilder.sub_midOne.getAsBoolean());
+      // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "mid one" + WaltAutonBuilder.sub_midOne.getAsBoolean(), ""));
+      // System.out.println("left sub" + WaltAutonBuilder.sub_left.getAsBoolean());
+      // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "left " + WaltAutonBuilder.sub_left.getAsBoolean(), ""));
+      // System.out.println("right sub" + WaltAutonBuilder.sub_right.getAsBoolean());
+      // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
 
 
-    //   Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path CLEARED", "Remake your auton!"));
-    // }
+      autonMade = false;
+    }
   }
 
   @Override
   public void disabledExit() {
-    
+    if (waltAutonFactory.isEmpty()) {
+      waltAutonFactory = auton_right;
+      m_autonomousCommand = autonCmdBuilder(waltAutonFactory.get().generateAuton().cmd());
+    }
   }
 
   private Command autonCmdBuilder(Command chooserCommand) {
@@ -700,7 +637,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     SwerveDriveState robotState = drivetrain.getState();
     Pose2d robotPose = robotState.Pose;
-    // visionSim.simulationPeriodic(robotPose);
+    visionSim.simulationPeriodic(robotPose);
     drivetrain.simulationPeriodic();
 
     // below is debug for swerve simulation. the farthest down one displays the module poses, but it's definitely bugged
