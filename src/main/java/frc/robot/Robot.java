@@ -157,9 +157,6 @@ public class Robot extends TimedRobot {
 
   // --- AUTONCHOOSER
   private Optional<WaltAutonFactory> waltAutonFactory;
-  private boolean isAutonMade = false;
-  private boolean clearAll = false;
-  private String autonName = "No Auton Made";
   private boolean autonMade = false;
 
   // autons
@@ -510,18 +507,21 @@ public class Robot extends TimedRobot {
         waltAutonFactory = auton_right;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right Auton Defined"));
         WaltAutonBuilder.pub_right.set(false);
+        WaltAutonBuilder.pub_autonName.set("Right_4_Piece (E-L4, D-L4, C-L4, B-L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
       }
       if (WaltAutonBuilder.sub_left.getAsBoolean()) {
         waltAutonFactory = auton_left;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left Auton Defined"));
         WaltAutonBuilder.pub_left.set(false);
+        WaltAutonBuilder.pub_autonName.set("Left_4_Piece (J-L4, K-L4, L-L4, A-L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "left " + WaltAutonBuilder.sub_left.getAsBoolean(), ""));
       }
       if (WaltAutonBuilder.sub_midOne.getAsBoolean()) {
         auton_midOne = true;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "MidOne Auton Defined"));
         WaltAutonBuilder.pub_midOne.set(false);
+        WaltAutonBuilder.pub_autonName.set("Mid_G_Piece (REEF_G L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "midOne " + WaltAutonBuilder.sub_midOne.getAsBoolean(), ""));
       }
 
@@ -538,6 +538,7 @@ public class Robot extends TimedRobot {
         // System.out.println("make auton " + WaltAutonBuilder.sub_makeAuton);
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "make auton " + WaltAutonBuilder.sub_makeAuton.getAsBoolean(), ""));
         autonMade = true;
+        WaltAutonBuilder.pub_autonMade.set(true);
       }
     }
 
@@ -551,6 +552,7 @@ public class Robot extends TimedRobot {
       WaltAutonBuilder.pub_midOne.set(false);
       WaltAutonBuilder.pub_left.set(false);
       WaltAutonBuilder.pub_right.set(false);
+      WaltAutonBuilder.pub_autonName.set("No Auton Made");
       // System.out.println("clear all sub" + WaltAutonBuilder.sub_clearAll.getAsBoolean());
       // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "clear all " + WaltAutonBuilder.sub_clearAll.getAsBoolean(), ""));
       // System.out.println("make auto sub" + WaltAutonBuilder.sub_makeAuton.getAsBoolean());
@@ -562,8 +564,8 @@ public class Robot extends TimedRobot {
       // System.out.println("right sub" + WaltAutonBuilder.sub_right.getAsBoolean());
       // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
 
-
       autonMade = false;
+      WaltAutonBuilder.pub_autonMade.set(false);
     }
   }
 
