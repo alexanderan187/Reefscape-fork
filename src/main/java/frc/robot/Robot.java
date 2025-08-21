@@ -10,6 +10,8 @@ import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -69,6 +71,7 @@ public class Robot extends TimedRobot {
   private final double kMaxTranslationSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private final double kMaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   private final double kMaxHighAngularRate = RotationsPerSecond.of(1.5).in(RadiansPerSecond);
+  private final double kSlowSpeed = kMaxTranslationSpeed * .5;
   private final Telemetry logger = new Telemetry(kMaxTranslationSpeed);
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -440,6 +443,30 @@ public class Robot extends TimedRobot {
 
   }
 
+  private Supplier<SwerveRequest> getTeleSwerveReq() {
+    return () -> {
+      double leftY = -driver.getLeftY();
+      double leftX = -driver.getLeftX();
+      return drive
+            .withVelocityX(leftY * kMaxTranslationSpeed)
+            .withVelocityY(leftX * kMaxTranslationSpeed)
+            .withRotationalRate(-driver.getRightX() * kMaxAngularRate)
+            .withRotationalDeadband(kMaxAngularRate * 0.1);
+    };
+  }
+
+  private Supplier<SwerveRequest> getSlowerTeleSwerveReq() {
+    return () -> {
+      double leftY = -driver.getLeftY();
+      double leftX = -driver.getLeftX();
+      return drive
+            .withVelocityX(leftY * kSlowSpeed)
+            .withVelocityY(leftX * kSlowSpeed)
+            .withRotationalRate(-driver.getRightX() * kMaxAngularRate)
+            .withRotationalDeadband(kMaxAngularRate * 0.1);
+    };
+  }
+
   private void driverRumble(double intensity) {
 		if (!DriverStation.isAutonomous()) {
 			driver.getHID().setRumble(RumbleType.kBothRumble, intensity);
@@ -619,7 +646,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if (elevator.nearSetpoint() && trg_toL4.getAsBoolean() && DriverStation.isTeleop()) { 
+      drivetrain.applyRequest(getSlowerTeleSwerveReq())
+              .until(trg_teleopScoreReq)
+              .andThen(drivetrain.applyRequest(getTeleSwerveReq()));
+    }
+  }
 
   @Override
   public void teleopExit() {}
