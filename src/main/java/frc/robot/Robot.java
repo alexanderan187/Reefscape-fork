@@ -353,7 +353,7 @@ public class Robot extends TimedRobot {
     // driver.start().whileTrue(drivetrain.wheelRadiusCharacterization(1));
   }
 
-  private Command driveCommand() {
+  private Command driveCommand(boolean slow) {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     // Drivetrain will execute this command periodically
@@ -368,8 +368,18 @@ public class Robot extends TimedRobot {
       log_stickDesiredFieldX.accept(driverXVelo);
       log_stickDesiredFieldY.accept(driverYVelo);
       log_stickDesiredFieldZRot.accept(driverYawRate);
-        
-      return drive
+      if (elevator.nearSetpoint() && trg_toL4.getAsBoolean() && DriverStation.isTeleop()) { 
+        drivetrain.applyRequest(getSlowerTeleSwerveReq())
+                .until(trg_teleopScoreReq)
+                .andThen(drivetrain.applyRequest(getTeleSwerveReq()));
+      }
+      if(slow) {
+        return drive
+        .withVelocityX(driverXVelo * kSlowSpeed ) // Drive forward with Y (forward)
+        .withVelocityY(driverYVelo * kSlowSpeed) // Drive left with X (left)
+        .withRotationalRate(driverYawRate); // Drive counterclockwise with negative X (left)
+      }
+        return drive
         .withVelocityX(driverXVelo) // Drive forward with Y (forward)
         .withVelocityY(driverYVelo) // Drive left with X (left)
         .withRotationalRate(driverYawRate); // Drive counterclockwise with negative X (left)
@@ -377,7 +387,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureBindings() {
-    drivetrain.setDefaultCommand(driveCommand());
+    drivetrain.setDefaultCommand(driveCommand(elevator.getPulleyRotations() >= (8.451660 + (0.169 / 2))));
 
     trg_driverDanger.and(driver.leftBumper()).whileTrue(
       Commands.parallel(
@@ -647,11 +657,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    if (elevator.nearSetpoint() && trg_toL4.getAsBoolean() && DriverStation.isTeleop()) { 
-      drivetrain.applyRequest(getSlowerTeleSwerveReq())
-              .until(trg_teleopScoreReq)
-              .andThen(drivetrain.applyRequest(getTeleSwerveReq()));
-    }
+
   }
 
   @Override
