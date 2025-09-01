@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   private final double kMaxTranslationSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private final double kMaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   private final double kMaxHighAngularRate = RotationsPerSecond.of(1.5).in(RadiansPerSecond);
-  private final double kSlowSpeed = kMaxTranslationSpeed * .5;
+  private final double kSlowSpeed = kMaxTranslationSpeed * .1;
   private final Telemetry logger = new Telemetry(kMaxTranslationSpeed);
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -353,33 +353,27 @@ public class Robot extends TimedRobot {
     // driver.start().whileTrue(drivetrain.wheelRadiusCharacterization(1));
   }
 
-  private Command driveCommand(boolean slow) {
+  private Command driveCommand() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     // Drivetrain will execute this command periodically
+
+    //define slewrate limiter here
     return drivetrain.applyRequest(() -> {
       var angularRate = driver.leftTrigger().getAsBoolean() ? 
         kMaxHighAngularRate : kMaxAngularRate;
     
-      var driverXVelo = -driver.getLeftY() * kMaxTranslationSpeed;
-      var driverYVelo = -driver.getLeftX() * kMaxTranslationSpeed;
+      boolean slow = elevator.getPulleyRotations() >= (8.451660 + (0.169 / 2));
+      double actualMaxTrSpeed = slow ? kSlowSpeed : kMaxTranslationSpeed;
+      //reset slewratelimiter here
+      var driverXVelo = -driver.getLeftY() * actualMaxTrSpeed;
+      var driverYVelo = -driver.getLeftX() * actualMaxTrSpeed;
       var driverYawRate = -driver.getRightX() * angularRate;
 
       log_stickDesiredFieldX.accept(driverXVelo);
       log_stickDesiredFieldY.accept(driverYVelo);
       log_stickDesiredFieldZRot.accept(driverYawRate);
-      if (elevator.nearSetpoint() && trg_toL4.getAsBoolean() && DriverStation.isTeleop()) { 
-        drivetrain.applyRequest(getSlowerTeleSwerveReq())
-                .until(trg_teleopScoreReq)
-                .andThen(drivetrain.applyRequest(getTeleSwerveReq()));
-      }
-      if(slow) {
-        return drive
-        .withVelocityX(driverXVelo * kSlowSpeed ) // Drive forward with Y (forward)
-        .withVelocityY(driverYVelo * kSlowSpeed) // Drive left with X (left)
-        .withRotationalRate(driverYawRate); // Drive counterclockwise with negative X (left)
-      }
-        return drive
+      return drive
         .withVelocityX(driverXVelo) // Drive forward with Y (forward)
         .withVelocityY(driverYVelo) // Drive left with X (left)
         .withRotationalRate(driverYawRate); // Drive counterclockwise with negative X (left)
@@ -387,7 +381,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureBindings() {
-    drivetrain.setDefaultCommand(driveCommand(elevator.getPulleyRotations() >= (8.451660 + (0.169 / 2))));
+    drivetrain.setDefaultCommand(driveCommand());
 
     trg_driverDanger.and(driver.leftBumper()).whileTrue(
       Commands.parallel(
@@ -453,30 +447,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  private Supplier<SwerveRequest> getTeleSwerveReq() {
-    return () -> {
-      double leftY = -driver.getLeftY();
-      double leftX = -driver.getLeftX();
-      return drive
-            .withVelocityX(leftY * kMaxTranslationSpeed)
-            .withVelocityY(leftX * kMaxTranslationSpeed)
-            .withRotationalRate(-driver.getRightX() * kMaxAngularRate)
-            .withRotationalDeadband(kMaxAngularRate * 0.1);
-    };
-  }
-
-  private Supplier<SwerveRequest> getSlowerTeleSwerveReq() {
-    return () -> {
-      double leftY = -driver.getLeftY();
-      double leftX = -driver.getLeftX();
-      return drive
-            .withVelocityX(leftY * kSlowSpeed)
-            .withVelocityY(leftX * kSlowSpeed)
-            .withRotationalRate(-driver.getRightX() * kMaxAngularRate)
-            .withRotationalDeadband(kMaxAngularRate * 0.1);
-    };
-  }
-
+ 
   private void driverRumble(double intensity) {
 		if (!DriverStation.isAutonomous()) {
 			driver.getHID().setRumble(RumbleType.kBothRumble, intensity);
