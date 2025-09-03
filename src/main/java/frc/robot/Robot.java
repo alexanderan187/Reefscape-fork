@@ -10,7 +10,7 @@ import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-// import org.photonvision.EstimatedRobotPose;
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -59,8 +59,8 @@ import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
-// import frc.robot.vision.Vision;
-// import frc.robot.vision.VisionSim;
+import frc.robot.vision.Vision;
+import frc.robot.vision.VisionSim;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Algae.State;
 
@@ -91,14 +91,14 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   // VisionSim could probably be static or a singleton instead of this reference mess but that's extra work to potentially break something
-  // private final VisionSim visionSim = new VisionSim();
-  // private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
-  //   VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
-  // private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
-  //   VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
+  private final VisionSim visionSim = new VisionSim();
+  private final Vision eleForwardsCam = new Vision(VisionK.kElevatorForwardsCamName, VisionK.kElevatorForwardsCamSimVisualName,
+    VisionK.kElevatorForwardsCamRoboToCam, visionSim, VisionK.kEleForwardCamSimProps);
+  private final Vision lowerRightCam = new Vision(VisionK.kLowerRightCamName, VisionK.kLowerRightCamSimVisualName,
+    VisionK.kLowerRightCamRoboToCam, visionSim, VisionK.kLowerRightCamSimProps);
 
-  // // this should be updated with all of our cameras
-  // private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam removed readded and ready to rumble
+  // this should be updated with all of our cameras
+  private final Vision[] cameras = {eleForwardsCam, lowerRightCam};  // lower right cam removed readded and ready to rumble
 
   private final DoubleLogger log_stickDesiredFieldX = WaltLogger.logDouble("Swerve", "stick desired teleop x");
   private final DoubleLogger log_stickDesiredFieldY = WaltLogger.logDouble("Swerve", "stick desired teleop y");
@@ -157,9 +157,6 @@ public class Robot extends TimedRobot {
 
   // --- AUTONCHOOSER
   private Optional<WaltAutonFactory> waltAutonFactory;
-  private boolean isAutonMade = false;
-  private boolean clearAll = false;
-  private String autonName = "No Auton Made";
   private boolean autonMade = false;
 
   // autons
@@ -169,9 +166,9 @@ public class Robot extends TimedRobot {
 
   public boolean auton_midOne;
 
-  // public void updateStaticField() {
-  //   Robot.robotField = visionSim.getSimDebugField();
-  // }
+  public void updateStaticField() {
+    Robot.robotField = visionSim.getSimDebugField();
+  }
 
   public Robot() {
     SignalLogger.start();
@@ -182,7 +179,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      // Optional.of(eleForwardsCam),
+      Optional.of(eleForwardsCam),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -205,7 +202,7 @@ public class Robot extends TimedRobot {
       coral,
       finger,
       elevator,
-      // Optional.empty(),
+      Optional.empty(),
       funnel,
       trg_toHPReq.and(trg_manipDanger.negate()),
       trg_intakeReq,
@@ -235,7 +232,7 @@ public class Robot extends TimedRobot {
     drivetrain.registerTelemetry(logger::telemeterize);
 
 
-    // updateStaticField();
+    updateStaticField();
     configureBindings();
     // configureTestBindings();
 
@@ -259,11 +256,11 @@ public class Robot extends TimedRobot {
     );
   }
 
-  // private final Runnable cameraSnapshotFunc = () -> {
-  //   for (Vision camera : cameras) {
-  //     camera.takeBothSnapshots();
-  //   }
-  // };
+  private final Runnable cameraSnapshotFunc = () -> {
+    for (Vision camera : cameras) {
+      camera.takeBothSnapshots();
+    }
+  };
 
   public WaltAutonFactory autonFactoryFactory(
     StartingLocs startLoc, List<ReefLocs> scoreLocs,
@@ -274,13 +271,13 @@ public class Robot extends TimedRobot {
       );
   }
 
-  // Command autoAlignCmd(boolean rightReef) {
-  //   return MovingAutoAlign.autoAlignWithIntermediateTransformUntilInTolerances(
-  //     drivetrain, 
-  //     () -> AutoAlignUtils.getMostLikelyScorePose(drivetrain.getState(), rightReef), 
-  //     () -> SharedAutoAlignK.kIntermediatePoseTransform
-  //   ).alongWith(Commands.runOnce(cameraSnapshotFunc));
-  // }
+  Command autoAlignCmd(boolean rightReef) {
+    return MovingAutoAlign.autoAlignWithIntermediateTransformUntilInTolerances(
+      drivetrain, 
+      () -> AutoAlignUtils.getMostLikelyScorePose(drivetrain.getState(), rightReef), 
+      () -> SharedAutoAlignK.kIntermediatePoseTransform
+    ).alongWith(Commands.runOnce(cameraSnapshotFunc));
+  }
 
   // checks for finger in unsafe place
   // no it doesnt lol. it prolly should tho.
@@ -343,12 +340,12 @@ public class Robot extends TimedRobot {
           )
         );
 
-      // trg_leftTeleopAutoAlign.whileTrue(
-      //   autoAlignCmd(false)
-      // );
-      // trg_rightTeleopAutoAlign.whileTrue(
-      //   autoAlignCmd(true)
-      // );
+      trg_leftTeleopAutoAlign.whileTrue(
+        autoAlignCmd(false)
+      );
+      trg_rightTeleopAutoAlign.whileTrue(
+        autoAlignCmd(true)
+      );
 
     // driver.start().whileTrue(drivetrain.wheelRadiusCharacterization(1));
   }
@@ -398,12 +395,12 @@ public class Robot extends TimedRobot {
       )
     );
 
-    // trg_leftTeleopAutoAlign.whileTrue(
-    //   autoAlignCmd(false)
-    // );
-    // trg_rightTeleopAutoAlign.whileTrue(
-    //   autoAlignCmd(true)
-    // );
+    trg_leftTeleopAutoAlign.whileTrue(
+      autoAlignCmd(false)
+    );
+    trg_rightTeleopAutoAlign.whileTrue(
+      autoAlignCmd(true)
+    );
     trg_driverDanger.and(driver.rightTrigger()).onTrue(superstructure.forceShoot());
     
     trg_manipDanger.and(trg_intakeReq).onTrue(superstructure.forceStateToIntake());
@@ -467,23 +464,18 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     superstructure.periodic();
-
-    log_povDown.accept(trg_toL1);
-    log_povRight.accept(trg_toL2);
-    log_povLeft.accept(trg_toL3);
-    log_povUp.accept(trg_toL4);
     
     // loops through each camera and adds its pose estimation to the drivetrain pose estimator if required
-    // for (Vision camera : cameras) {
-    //   Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
-    //   if (estimatedPoseOptional.isPresent()) {
-    //     EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
-    //     Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
-    //     var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
-    //     drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
-    //     lastGotTagMsmtTimer.restart();
-    //   }
-    // }
+    for (Vision camera : cameras) {
+      Optional<EstimatedRobotPose> estimatedPoseOptional = camera.getEstimatedGlobalPose();
+      if (estimatedPoseOptional.isPresent()) {
+        EstimatedRobotPose estimatedRobotPose = estimatedPoseOptional.get();
+        Pose2d estimatedRobotPose2d = estimatedRobotPose.estimatedPose.toPose2d();
+        var ctreTime = Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds);
+        drivetrain.addVisionMeasurement(estimatedRobotPose2d, ctreTime, camera.getEstimationStdDevs());
+        lastGotTagMsmtTimer.restart();
+      }
+    }
 
     boolean visionSeenPastSec = !lastGotTagMsmtTimer.hasElapsed(1);
     log_visionSeenPastSecond.accept(visionSeenPastSec);
@@ -515,18 +507,21 @@ public class Robot extends TimedRobot {
         waltAutonFactory = auton_right;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Right Auton Defined"));
         WaltAutonBuilder.pub_right.set(false);
+        WaltAutonBuilder.pub_autonName.set("Right_4_Piece (E-L4, D-L4, C-L4, B-L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
       }
       if (WaltAutonBuilder.sub_left.getAsBoolean()) {
         waltAutonFactory = auton_left;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "Left Auton Defined"));
         WaltAutonBuilder.pub_left.set(false);
+        WaltAutonBuilder.pub_autonName.set("Left_4_Piece (J-L4, K-L4, L-L4, A-L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "left " + WaltAutonBuilder.sub_left.getAsBoolean(), ""));
       }
       if (WaltAutonBuilder.sub_midOne.getAsBoolean()) {
         auton_midOne = true;
         Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Auton Path DEFINED", "MidOne Auton Defined"));
         WaltAutonBuilder.pub_midOne.set(false);
+        WaltAutonBuilder.pub_autonName.set("Mid_G_Piece (REEF_G L4)");
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "midOne " + WaltAutonBuilder.sub_midOne.getAsBoolean(), ""));
       }
 
@@ -543,6 +538,7 @@ public class Robot extends TimedRobot {
         // System.out.println("make auton " + WaltAutonBuilder.sub_makeAuton);
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "make auton " + WaltAutonBuilder.sub_makeAuton.getAsBoolean(), ""));
         autonMade = true;
+        WaltAutonBuilder.pub_autonMade.set(true);
       }
     }
 
@@ -556,6 +552,7 @@ public class Robot extends TimedRobot {
       WaltAutonBuilder.pub_midOne.set(false);
       WaltAutonBuilder.pub_left.set(false);
       WaltAutonBuilder.pub_right.set(false);
+      WaltAutonBuilder.pub_autonName.set("No Auton Made");
       // System.out.println("clear all sub" + WaltAutonBuilder.sub_clearAll.getAsBoolean());
       // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "clear all " + WaltAutonBuilder.sub_clearAll.getAsBoolean(), ""));
       // System.out.println("make auto sub" + WaltAutonBuilder.sub_makeAuton.getAsBoolean());
@@ -567,8 +564,8 @@ public class Robot extends TimedRobot {
       // System.out.println("right sub" + WaltAutonBuilder.sub_right.getAsBoolean());
       // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "right" + WaltAutonBuilder.sub_right.getAsBoolean(), ""));
 
-
       autonMade = false;
+      WaltAutonBuilder.pub_autonMade.set(false);
     }
   }
 
@@ -642,7 +639,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     SwerveDriveState robotState = drivetrain.getState();
     Pose2d robotPose = robotState.Pose;
-    // visionSim.simulationPeriodic(robotPose);
+    visionSim.simulationPeriodic(robotPose);
     drivetrain.simulationPeriodic();
 
     // below is debug for swerve simulation. the farthest down one displays the module poses, but it's definitely bugged
