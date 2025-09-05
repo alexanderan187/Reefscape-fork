@@ -538,7 +538,9 @@ public class Robot extends TimedRobot {
         // System.out.println("make auton " + WaltAutonBuilder.sub_makeAuton);
         // Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "make auton " + WaltAutonBuilder.sub_makeAuton.getAsBoolean(), ""));
         autonMade = true;
-        WaltAutonBuilder.pub_autonMade.set(true);
+        if (!waltAutonFactory.isEmpty()) {
+          WaltAutonBuilder.pub_autonMade.set(true);
+        }
       }
     }
 
