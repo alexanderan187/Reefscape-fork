@@ -355,7 +355,7 @@ public class WaltAutonFactory {
         firstScoreTraj.done()
             .onTrue(
                 Commands.sequence(
-                    // m_drivetrain.stopCmd(),
+                    m_drivetrain.stopCmd(),
                     Commands.parallel(
                         autoAlignCommand(() -> m_scoreLocs.get(0)),
                         m_superstructure.autonEleToScoringPosReq(m_heights.get(heightCounter++)),
