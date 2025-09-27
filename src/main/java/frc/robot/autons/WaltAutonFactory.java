@@ -355,7 +355,7 @@ public class WaltAutonFactory {
         firstScoreTraj.done()
             .onTrue(
                 Commands.sequence(
-                    //m_drivetrain.stopCmd(),
+                    // m_drivetrain.stopCmd(),
                     Commands.parallel(
                         autoAlignCommand(() -> m_scoreLocs.get(0)),
                         m_superstructure.autonEleToScoringPosReq(m_heights.get(heightCounter++)),
@@ -380,7 +380,7 @@ public class WaltAutonFactory {
             if (RobotBase.isSimulation()) {
                 allTheTrajs.get(allTrajIdx).getFirst().done()
                     .onTrue(Commands.sequence(
-                       // m_drivetrain.stopCmd(),
+                        m_drivetrain.stopCmd(),
                         Commands.waitUntil(() -> m_superstructure.m_state == Superstructure.State.ELE_TO_HP),
                         trajCmd,
                         m_superstructure.simIntook(),
@@ -390,12 +390,11 @@ public class WaltAutonFactory {
             } else {
             allTheTrajs.get(allTrajIdx).getFirst().done()
                 .onTrue(Commands.sequence(
-                    //m_drivetrain.stopCmd(),
+                    m_drivetrain.stopCmd(),
                     // Commands.waitUntil(m_superstructure.getTopBeamBreak().debounce(0.08)),
                     Commands.waitUntil(m_funnel.trg_atCurrLim.or(m_superstructure.getTopBeamBreak()))
                         .alongWith(Commands.print("funnel detected coral")),
                     trajCmd,
-                    m_superstructure.simIntook(),
                     m_drivetrain.stopCmd(),
                     Commands.print("Running Path: " + trajCmd)
             ));
@@ -431,8 +430,8 @@ public class WaltAutonFactory {
                     Commands.waitUntil(() -> m_superstructure.m_state == Superstructure.State.SCORED),
                     scoreCmd(),
                     m_superstructure.simScored(),
-                    nextTrajCmd
-                    //m_drivetrain.stopCmd()
+                    nextTrajCmd,
+                    m_drivetrain.stopCmd()
                 );
 
                 afterPathTrg.onTrue(
@@ -446,9 +445,8 @@ public class WaltAutonFactory {
                     ),
                     Commands.waitUntil(m_superstructure.getBottomBeamBreak()),
                     scoreCmd(),
-                    m_superstructure.simScored(),
-                    nextTrajCmd
-                    //m_drivetrain.stopCmd()
+                    nextTrajCmd,
+                    m_drivetrain.stopCmd()
                 );
 
                 afterPathTrg.onTrue(
