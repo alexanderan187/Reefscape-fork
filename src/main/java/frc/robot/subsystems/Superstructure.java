@@ -1,8 +1,6 @@
-package frc.robot.subsystems;
+// im not sure but i think this is a basis for subsystems, quite frankly this is a long file and i have no idea what it does. looks like it does some logging
 
-import static frc.robot.Constants.kRumbleIntensity;
-import static frc.robot.Constants.kRumbleTimeoutSecs;
-import static frc.robot.Constants.RobotK.*;
+package frc.robot.subsystems;
 
 import java.util.Optional;
 import java.util.function.DoubleConsumer;
@@ -14,11 +12,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.subsystems.Elevator.EleHeight.*;
-
+import static frc.robot.Constants.RobotK.kLogTab;
+import static frc.robot.Constants.kRumbleTimeoutSecs;
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
+import static frc.robot.subsystems.Elevator.EleHeight.HOME;
+import static frc.robot.subsystems.Elevator.EleHeight.HP;
+import static frc.robot.subsystems.Elevator.EleHeight.L1;
+import static frc.robot.subsystems.Elevator.EleHeight.L2;
+import static frc.robot.subsystems.Elevator.EleHeight.L3;
+import static frc.robot.subsystems.Elevator.EleHeight.L4;
 import frc.robot.vision.Vision;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;

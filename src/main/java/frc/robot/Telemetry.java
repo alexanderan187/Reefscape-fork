@@ -1,3 +1,5 @@
+// as the name implies, this probably does telemtry for debugging and tuning and stuff
+
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;

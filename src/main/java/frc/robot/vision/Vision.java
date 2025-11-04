@@ -1,4 +1,20 @@
+// probably does vision stuff and uses the data from the subsystem to do useful things, dunno how it works tho. seems like it tracks reefs and such, april tags maybe?
+
 package frc.robot.vision;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
@@ -16,30 +32,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Robot;
 import frc.robot.Constants.AutoAlignmentK;
 import frc.robot.Constants.FieldK;
+import static frc.robot.Constants.FieldK.kTagLayout;
+import frc.robot.Robot;
 import frc.robot.autons.TrajsAndLocs.ReefLocs;
 import frc.util.AllianceFlipUtil;
-
-import java.lang.StackWalker.Option;
-import java.rmi.StubNotFoundException;
-import java.util.List;
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-
-import static edu.wpi.first.units.Units.Rotation;
-import static frc.robot.Constants.FieldK.kTagLayout;
 
 public class Vision {
     private final PhotonCamera m_camera;

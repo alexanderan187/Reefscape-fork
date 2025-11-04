@@ -2,35 +2,39 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+// this seems like the robot code that links all the subsystems and autons together to be useful
+
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -38,27 +42,36 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.FieldK;
 import frc.robot.Constants.VisionK;
 import frc.robot.autons.AutonChooser;
-import frc.robot.autons.WaltAutonBuilder;
 import frc.robot.autons.TrajsAndLocs.HPStation;
 import frc.robot.autons.TrajsAndLocs.ReefLocs;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_C;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_D;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_E;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_G;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_J;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_K;
+import static frc.robot.autons.TrajsAndLocs.ReefLocs.REEF_L;
 import frc.robot.autons.TrajsAndLocs.StartingLocs;
+import frc.robot.autons.WaltAutonBuilder;
 import frc.robot.autons.WaltAutonBuilder.NumCycles;
-
-import static frc.robot.autons.TrajsAndLocs.ReefLocs.*;
-
 import frc.robot.autons.WaltAutonFactory;
 import frc.robot.generated.TunerConstants;
-import frc.util.Elastic;
-import frc.util.WaltLogger;
-import frc.util.Elastic.Notification.NotificationLevel;
-import frc.util.WaltLogger.BooleanLogger;
-import frc.util.WaltLogger.DoubleLogger;
+import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Algae.State;
+import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.AlgaeHeight;
 import frc.robot.subsystems.Elevator.EleHeight;
+import frc.robot.subsystems.Finger;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Swerve;
 import frc.robot.vision.Vision;
 import frc.robot.vision.VisionSim;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.Algae.State;
+import frc.util.Elastic;
+import frc.util.Elastic.Notification.NotificationLevel;
+import frc.util.WaltLogger;
+import frc.util.WaltLogger.BooleanLogger;
+import frc.util.WaltLogger.DoubleLogger;
 
 public class Robot extends TimedRobot {
 

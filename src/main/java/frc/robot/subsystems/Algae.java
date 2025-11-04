@@ -1,8 +1,13 @@
+// Appears to be code for the algae removal subsystem
+
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,21 +23,24 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static frc.robot.Constants.AlgaeK.kAngleTolerance;
+import static frc.robot.Constants.AlgaeK.kHasAlgaeCurrent;
+import static frc.robot.Constants.AlgaeK.kIntakeCANID;
+import static frc.robot.Constants.AlgaeK.kIntakeConfiguration;
+import static frc.robot.Constants.AlgaeK.kLogTab;
+import static frc.robot.Constants.AlgaeK.kWristCANID;
+import static frc.robot.Constants.AlgaeK.kWristConfiguration;
+import static frc.robot.Constants.AlgaeK.kWristMMAccel;
+import static frc.robot.Constants.AlgaeK.kWristMMAccelSlow;
+import static frc.robot.Constants.AlgaeK.kWristMMJerk;
+import static frc.robot.Constants.AlgaeK.kWristMMVelo;
+import static frc.robot.Constants.AlgaeK.kWristMMVeloSlow;
 import frc.robot.generated.TunerConstants;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;
 import frc.util.WaltLogger.DoubleLogger;
 import frc.util.WaltLogger.IntLogger;
 import frc.util.WaltLogger.StringLogger;
-
-import static frc.robot.Constants.kRumbleIntensity;
-import static frc.robot.Constants.kRumbleTimeoutSecs;
-import static frc.robot.Constants.AlgaeK.*;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
  
 public class Algae extends SubsystemBase {
     private final TalonFX m_wrist = new TalonFX(kWristCANID, TunerConstants.kCANBus); // I KNOW this is not a wrist its a shoulder, but im going to call it a wrist.

@@ -1,14 +1,6 @@
+// unsure, code for a subsystem called the finger which i suppose could be the algae removal thing? no idea tbh
+
 package frc.robot.subsystems;
-
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.util.WaltLogger;
-import frc.util.WaltLogger.BooleanLogger;
-
-import static frc.robot.Constants.FingerK.*;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -18,6 +10,21 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.Constants.FingerK.kDefaultPos;
+import static frc.robot.Constants.FingerK.kFingerMotorCANID;
+import static frc.robot.Constants.FingerK.kLogTab;
+import static frc.robot.Constants.FingerK.kParallelToGroundRotations;
+import static frc.robot.Constants.FingerK.kSoftLimitEnabledConfig;
+import static frc.robot.Constants.FingerK.kSoftLimitSwitchDisabledConfig;
+import static frc.robot.Constants.FingerK.kTalonFXSConfig;
+import frc.util.WaltLogger;
+import frc.util.WaltLogger.BooleanLogger;
 
 public class Finger extends SubsystemBase {
     private final TalonFXS m_motor = new TalonFXS(kFingerMotorCANID);

@@ -1,25 +1,27 @@
+// As the name suggests, I would guess that this is the subsystem code for the coral elevator.
+
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.GenericEntry;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -35,15 +37,22 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import static frc.robot.Constants.ElevatorK.*;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import frc.robot.Constants.ElevatorK;
+import static frc.robot.Constants.ElevatorK.kBackCANID;
+import static frc.robot.Constants.ElevatorK.kCarriageMassKg;
+import static frc.robot.Constants.ElevatorK.kFrontCANID;
+import static frc.robot.Constants.ElevatorK.kFrontTalonFXConfig;
+import static frc.robot.Constants.ElevatorK.kGearRatio;
+import static frc.robot.Constants.ElevatorK.kLogTab;
+import static frc.robot.Constants.ElevatorK.kMaximumHeight;
+import static frc.robot.Constants.ElevatorK.kMinimumHeight;
+import static frc.robot.Constants.ElevatorK.kRearTalonFXConfig;
+import static frc.robot.Constants.ElevatorK.kSoftLimitSwitchDisabledConfig;
+import static frc.robot.Constants.ElevatorK.kSoftwareLimitConfigs;
+import static frc.robot.Constants.ElevatorK.kSpoolRadius;
+import static frc.robot.Constants.ElevatorK.kStartingHeightMeters;
+import static frc.robot.Constants.ElevatorK.kTolerancePulleyRotations;
+import static frc.robot.Constants.ElevatorK.metersToRotationVel;
 import frc.robot.generated.TunerConstants;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;

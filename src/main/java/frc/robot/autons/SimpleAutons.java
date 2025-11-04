@@ -1,3 +1,5 @@
+// First changes robot position based on alliance side then executes auton based on a predetermined path
+
 package frc.robot.autons;
 
 import static edu.wpi.first.units.Units.Meters;

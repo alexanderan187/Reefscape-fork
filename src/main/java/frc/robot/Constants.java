@@ -1,3 +1,5 @@
+// seems like more constants for the robot, including gear ratios and locations of game locations
+
 package frc.robot;
 
 import java.util.ArrayList;

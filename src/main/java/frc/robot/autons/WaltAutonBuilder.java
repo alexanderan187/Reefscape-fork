@@ -1,3 +1,5 @@
+// Creates a basis for autons which is easily configurable. Used by other auton files, I presume.
+
 package frc.robot.autons;
 
 import java.util.ArrayList;

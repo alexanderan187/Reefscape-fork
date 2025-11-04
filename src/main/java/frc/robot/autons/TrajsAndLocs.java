@@ -1,3 +1,5 @@
+// Creates locations of reefs and positions for auton usage
+
 package frc.robot.autons;
 
 import static edu.wpi.first.units.Units.Meters;

@@ -1,6 +1,6 @@
-package frc.robot.vision;
+// i think this adds vision to the simulation thing?
 
-import static frc.robot.Constants.FieldK.kTagLayout;
+package frc.robot.vision;
 
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.VisionSystemSim;
@@ -8,6 +8,7 @@ import org.photonvision.simulation.VisionSystemSim;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import static frc.robot.Constants.FieldK.kTagLayout;
 import frc.robot.Robot;
 
 public class VisionSim {

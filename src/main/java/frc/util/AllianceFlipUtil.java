@@ -5,11 +5,9 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.util;
+// i think the name suggests that this code changes code dynamically based on what side of the alliance youre on, to prevent having to recode the entire thing
 
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.Constants.FieldK.kFieldLengthMeters;
-import static frc.robot.Constants.FieldK.kFieldWidthMeters;
+package frc.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import static frc.robot.Constants.FieldK.kFieldLengthMeters;
+import static frc.robot.Constants.FieldK.kFieldWidthMeters;
 
 /** Utility functions for flipping from the blue to red alliance. */
 public class AllianceFlipUtil {

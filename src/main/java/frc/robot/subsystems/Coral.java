@@ -1,3 +1,5 @@
+// Probably some sort of framework for the coral subsystem but I cant really tell
+
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -9,11 +11,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import static frc.robot.Constants.Coralk.*;
-
+import static frc.robot.Constants.Coralk.kBotBeamBreakChannel;
+import static frc.robot.Constants.Coralk.kCoralMotorCANID;
+import static frc.robot.Constants.Coralk.kCoralMotorTalonFXConfiguration;
+import static frc.robot.Constants.Coralk.kLogTab;
+import static frc.robot.Constants.Coralk.kTopBeamBreakChannel;
 import frc.util.WaltLogger;
 import frc.util.WaltLogger.BooleanLogger;
 
